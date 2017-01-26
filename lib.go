@@ -10,14 +10,14 @@ import (
 
 type bTrack struct {
 	//AlbumArtist    string
-	DiscNumber     uint8
-	TrackNumber    uint8
+	DiscNumber     float64 //uint8
+	TrackNumber    float64 //uint8
 	DurationMillis string
 	EstimatedSize  string
 	ID             string
-	PlayCount      uint32
+	PlayCount      float64
 	Title          string
-	Year           int
+	Year           float64
 }
 
 func refreshLibrary() {
