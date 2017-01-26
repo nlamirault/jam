@@ -14,6 +14,10 @@ The features it has are:
   track
 - the interface is Cmus rip off, I've only added a progress bar
 
+If you use 2-factor authorisation with your Google account, you will have to
+generate an app password, follow this link 
+https://security.google.com/settings/security/apppasswords
+
 The binary I released is not static, it depends on the following libraries on my
 system
 
