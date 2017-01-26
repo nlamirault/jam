@@ -36,7 +36,7 @@ func fullDbPath() string {
 	if runtime.GOOS == "windows" {
 		return filepath.Join(os.Getenv("APPDATA"), "jamdb")
 	}
-	return filepath.Join(os.Getenv("HOME"), ".jamdb")
+	return filepath.Join(os.Getenv("HOME"), ".local/share/jamdb")
 }
 
 func checkCreds() {
