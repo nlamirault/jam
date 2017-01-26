@@ -13,6 +13,9 @@ The features it has are:
 - playing, pausing (buggy, I need help with it) , stopping, previous track, next
   track
 - the interface is Cmus rip off, I've only added a progress bar
+- this player lists artists in random order - this is a deliberate choice and 
+  not a bug
+
 
 If you use 2-factor authorisation with your Google account, you will have to
 generate an app password, follow this link 
