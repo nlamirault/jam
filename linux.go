@@ -120,6 +120,7 @@ func player(s tcell.Screen) {
 
 							track = queueTemp[album][ntrack]
 							song, err = gm.GetStream(track.ID)
+							checkErr(err)
 							//d = mpa.Decoder{Input: song.Body}
 							r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 							checkErr(err)
