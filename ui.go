@@ -23,7 +23,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -145,8 +144,6 @@ func mainLoop(s tcell.Screen) {
 			case 'u':
 				refreshLibrary()
 				populateArtists()
-			case 'd':
-				//debug()
 			case 'x':
 				state <- play
 				i := curPos[false] - 1 + scrOffset[false]
@@ -215,10 +212,6 @@ func searchQuery(s tcell.Screen) {
 		}
 	}
 
-}
-
-func debug() {
-	log.Fatal(curPos[false]-1+scrOffset[false], artists[curPos[false]-1+scrOffset[false]], artists[len(artists)-1], len(artists)-1)
 }
 
 func pageUp() {

@@ -37,12 +37,14 @@ const (
 )
 
 var (
-	vers bool
+	vers  bool
+	debug bool
 )
 
 func init() {
 	// parse flags
 	flag.BoolVar(&vers, "version", false, "print version and exit")
+	flag.BoolVar(&debug, "debug", false, "debug")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.Version))
@@ -72,6 +74,9 @@ func main() {
 
 func checkErr(e error) {
 	if e != nil {
+		if debug {
+			panic(e)
+		}
 		log.Fatal(e)
 	}
 }
