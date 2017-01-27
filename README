@@ -67,6 +67,7 @@ b - next track
 z - previous track
 u - synchronize the database (in case you added some songs in the web interface)
 / - search artists
+n - next search result
 tab - toggle artists/tracks view
 escape, q - quit
 up arrow, k - scroll up

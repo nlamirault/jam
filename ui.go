@@ -156,6 +156,8 @@ func mainLoop(s tcell.Screen) {
 				state <- next
 			case 'z':
 				state <- prev
+			case 'n':
+				searchQuery(s)
 			}
 		}
 		updateUI(s)
@@ -168,6 +170,7 @@ func search(s tcell.Screen) {
 	numTrack = 0
 	curPos[true] = 2
 	scrOffset[true] = 0
+	query = []rune{}
 	for {
 		printStatus(s)
 		s.Show()
@@ -186,7 +189,6 @@ func search(s tcell.Screen) {
 					return
 				}
 			case tcell.KeyEnter:
-				query = []rune{}
 				inSearch = false
 				return
 			}
@@ -196,8 +198,12 @@ func search(s tcell.Screen) {
 }
 
 func searchQuery(s tcell.Screen) {
+	var i int
+	if !inSearch {
+		i = scrOffset[false] + curPos[false]
+	}
 	if len(query) > 0 {
-		for i := 0; i < len(artists); i++ {
+		for i < len(artists) {
 			if strings.HasPrefix(strings.ToLower(artists[i]), strings.ToLower(string(query))) {
 				if i > 2 {
 					scrOffset[false] = i - 2
@@ -209,6 +215,7 @@ func searchQuery(s tcell.Screen) {
 				updateUI(s)
 				return
 			}
+			i++
 		}
 	}
 
@@ -223,9 +230,9 @@ func pageDn() {
 func printStatus(s tcell.Screen) {
 	if inSearch {
 		s.SetContent(0, height-1, '/', nil, dfStyle)
-	}
-	for i, r := range query {
-		s.SetContent(i+1, height-1, r, nil, dfStyle)
+		for i, r := range query {
+			s.SetContent(i+1, height-1, r, nil, dfStyle)
+		}
 	}
 }
 
