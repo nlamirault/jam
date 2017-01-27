@@ -73,8 +73,4 @@ up arrow, k - scroll up
 down arrow, j - scroll down
 space - toggle albums
 
-Searching artists is a bit buggy, if you can't find an artist and you are
-certain it's there, cancel the search, scroll to the top (Home key), and search
-from there
-
 [1] https://github.com/mjibson/moggio
