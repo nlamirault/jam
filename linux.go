@@ -42,7 +42,8 @@ func player(s tcell.Screen) {
 	pauseDur := time.Duration(0)
 
 	ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, 44100, 2}
-	stream, _ := pulse.Playback("jam", "jam", &ss)
+	stream, err := pulse.Playback("jam", "jam", &ss)
+	checkErr(err)
 	defer stream.Free()
 	defer stream.Drain()
 
@@ -68,11 +69,11 @@ func player(s tcell.Screen) {
 
 			track := queueTemp[album][ntrack]
 			song, err := gm.GetStream(track.ID)
+			checkErr(err)
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
 			artist := <-curArtist
-			checkErr(err)
 			timer := time.Now()
 			go func() {
 				for {
