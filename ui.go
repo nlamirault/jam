@@ -197,7 +197,7 @@ func search(s tcell.Screen) {
 
 func searchQuery(s tcell.Screen) {
 	if len(query) > 0 {
-		for i := scrOffset[false] + curPos[false]; i < len(artists); i++ {
+		for i := 0; i < len(artists); i++ {
 			if strings.HasPrefix(strings.ToLower(artists[i]), strings.ToLower(string(query))) {
 				if i > 2 {
 					scrOffset[false] = i - 2
