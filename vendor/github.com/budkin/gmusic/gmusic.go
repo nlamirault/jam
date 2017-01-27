@@ -295,7 +295,7 @@ type Track struct {
 	RecentTimestamp       string   `json:"recentTimestamp"`
 	StoreId               string   `json:"storeId"`
 	Title                 string   `json:"title"`
-	TrackNumber           uint8    `json:"trackNumber"`
+	TrackNumber           uint32   `json:"trackNumber"`
 	TrackType             string   `json:"trackType"`
 	Year                  int      `json:"year"`
 }

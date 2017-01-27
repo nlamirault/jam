@@ -31,7 +31,7 @@ import (
 type bTrack struct {
 	//AlbumArtist    string
 	DiscNumber     uint8
-	TrackNumber    uint8
+	TrackNumber    uint32
 	DurationMillis string
 	EstimatedSize  string
 	ID             string
