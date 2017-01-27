@@ -23,6 +23,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
@@ -37,7 +38,7 @@ import (
 var (
 	artistsMap = make(map[string]bool) // map of artists, so they are shown in random order
 	// the bool is whether the artist is unfolded in the artists view (albums are shown)
-	artists       = make([]string, 0)         // slice of artists, populated from artistsMap
+	artists       = sort.StringSlice{}        // slice of artists, populated from artistsMap
 	songs         = make(map[string][]string) //map of currently selected artist's albums and songs in it
 	albums        = make(map[string][]string) // map of artists and their albums
 	width, height int                         // width and height of the window
@@ -158,10 +159,23 @@ func mainLoop(s tcell.Screen) {
 				state <- prev
 			case 'n':
 				searchQuery(s)
+			case 'R':
+				randomizeArtists(s)
 			}
 		}
 		updateUI(s)
 	}
+}
+func randomizeArtists(s tcell.Screen) {
+	var temp = make(sort.StringSlice, len(artists))
+	perm := rand.Perm(len(artists))
+	for i, v := range perm {
+		temp[v] = artists[i]
+	}
+
+	artists = temp
+	updateUI(s)
+
 }
 
 func search(s tcell.Screen) {
@@ -765,6 +779,7 @@ func populateArtists() {
 		for k := range artistsMap {
 			artists = append(artists, k)
 		}
+		artists.Sort()
 
 		return nil
 	})

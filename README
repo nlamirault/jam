@@ -13,8 +13,8 @@ The features it has are:
 - playing, pausing (buggy, I need help with it) , stopping, previous track, next
   track
 - the interface is Cmus rip off, I've only added a progress bar
-- this player lists artists in random order - this is a deliberate choice and 
-  not a bug
+- this player no longer lists artists in random order - if you want to randomize
+  them press R
 
 
 If you use 2-factor authorisation with your Google account, you will have to
@@ -73,5 +73,6 @@ escape, q - quit
 up arrow, k - scroll up
 down arrow, j - scroll down
 space - toggle albums
+R - randomize artists
 
 [1] https://github.com/mjibson/moggio
