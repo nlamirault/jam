@@ -592,6 +592,7 @@ func numSongs() int {
 
 func printSongs(s tcell.Screen, beg, end int) {
 	queue = [][]*bTrack{}
+	js := new(bTrack)
 	populateSongs(s)
 	i, k := 0, 1
 	if numAlbum[false] == -1 {
@@ -614,7 +615,6 @@ func printSongs(s tcell.Screen, beg, end int) {
 			}
 			i++
 			for _, song := range songs[key] {
-				js := new(bTrack)
 				json.Unmarshal([]byte(song), js)
 				if i >= beg && i < end {
 					printSingleItem(s, width/3+2, k, dfStyle, makeSongLine(js), 0, false)
@@ -659,8 +659,13 @@ func printAlbum(s tcell.Screen, y int, alb string) {
 func makeSongLine(track *bTrack) string {
 	var res string
 	length := 0
-
-	res = fmt.Sprintf("%2v. %v", track.TrackNumber, track.Title)
+	var i = curPos[false] - 1 + scrOffset[false]
+	if artists[i-numAlb(i)] == "Various Artists" {
+		res = fmt.Sprintf("%2v. %v - %v", track.TrackNumber, track.Artist,
+			track.Title)
+	} else {
+		res = fmt.Sprintf("%2v. %v", track.TrackNumber, track.Title)
+	}
 	for _, c := range res {
 		length += runewidth.RuneWidth(c)
 	}
