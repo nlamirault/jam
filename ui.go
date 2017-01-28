@@ -371,6 +371,7 @@ func updateUI(s tcell.Screen) {
 		printSongs(s, scrOffset[true], height+scrOffset[true]-3)
 		for curPos[false] > height-3 {
 			curPos[false]--
+			scrOffset[false]++
 		}
 		for curPos[true] > height-3 {
 			curPos[true] = 2
