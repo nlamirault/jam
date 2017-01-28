@@ -20,18 +20,12 @@
 
 package ui
 
-import (
-	"log"
-)
-
 func (app *App) numAlb(k int) int {
 	var i int
-	log.Printf("Artists: %s %d %d", app.Artists, len(app.Artists), k)
 	for app.Artists[k] == "" {
 		i++
 		k--
 	}
-	log.Printf("=+> %d", i)
 	return i
 
 }
