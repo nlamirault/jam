@@ -1,4 +1,4 @@
-jam
+# Jam
 
 This is my first Go program, I wanted to listen to Google Play Music on console,
 so I wrote a player. It is inspired by Matt Jibson's Moggio [1] and uses one of
@@ -7,24 +7,24 @@ https://dl.dropboxusercontent.com/u/3651269/out-2.ogv
 
 The features it has are:
 
-- populating a local database with the artists and albums you saved through the
+* populating a local database with the artists and albums you saved through the
   web interface (or by any other means)
-- searching within artists in the database
-- playing, pausing (buggy, I need help with it) , stopping, previous track, next
+* searching within artists in the database
+* playing, pausing (buggy, I need help with it) , stopping, previous track, next
   track
-- the interface is Cmus rip off, I've only added a progress bar
-- this player no longer lists artists in random order - if you want to randomize
+* the interface is Cmus rip off, I've only added a progress bar
+* this player no longer lists artists in random order - if you want to randomize
   them press R
 
 
 If you use 2-factor authorisation with your Google account, you will have to
-generate an app password, follow this link 
+generate an app password, follow this link
 https://security.google.com/settings/security/apppasswords
 
 The binary I released is not static, it depends on the following libraries on my
 system
 
- $ ldd ./jam 
+    $ ldd ./jam
 	linux-vdso.so.1 (0x00007fff8e3e7000)
 	libpulse-simple.so.0 => /usr/lib/libpulse-simple.so.0 (0x00007fe7eca1e000)
 	libpulse.so.0 => /usr/lib/libpulse.so.0 (0x00007fe7ec7cd000)
@@ -60,19 +60,31 @@ Go program. Code reviews are welcome too!
 
 The keybindins are mostly the same as in Cmus:
 
-return, x - play currently selected artist, album or song
-c - pause
-v - stop
-b - next track
-z - previous track
-u - synchronize the database (in case you added some songs in the web interface)
-/ - search artists
-n - next search result
-tab - toggle artists/tracks view
-escape, q - quit
-up arrow, k - scroll up
-down arrow, j - scroll down
-space - toggle albums
-R - randomize artists
+Keybinding                           | Description
+-------------------------------------|------------------------------------------------------------
+<kbd>return</kbd> <kbd>x</kbd>       | play currently selected artist, album or song
+<kbd>c</kbd>                         | pause
+<kbd>v</kbd>                         | stop
+<kbd>b</kbd>                         | next track
+<kbd>z</kbd>                         | previous track
+<kbd>u</kbd>                         | synchronize the database (in case you added some songs in the web interface)
+<kbd>/</kbd>                         | search artists
+<kbd>n</kbd>                         | next search result
+<kbd>tab</kbd>                       | toggle artists/tracks view
+<kbd>escape</kbd>, <kbd>q</kbd>      | quit
+<kbd>up arrow</kbd>, <kbd>k</kbd>    | scroll up
+<kbd>down arrow</kbd>, <kbd>j</kbd>  | scroll down
+<kbd>space</kbd>                     | toggle albums
+<kbd>R</kbd>                         |randomize artists
+
+
+
+## License
+
+See [LICENSE][] for the complete license.
+
+
+
+
 
 [1] https://github.com/mjibson/moggio
