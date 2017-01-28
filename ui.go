@@ -592,7 +592,7 @@ func numSongs() int {
 
 func printSongs(s tcell.Screen, beg, end int) {
 	queue = [][]*bTrack{}
-	js := new(bTrack)
+	var js *bTrack
 	populateSongs(s)
 	i, k := 0, 1
 	if numAlbum[false] == -1 {
@@ -615,6 +615,8 @@ func printSongs(s tcell.Screen, beg, end int) {
 			}
 			i++
 			for _, song := range songs[key] {
+
+				js = new(bTrack)
 				json.Unmarshal([]byte(song), js)
 				if i >= beg && i < end {
 					printSingleItem(s, width/3+2, k, dfStyle, makeSongLine(js), 0, false)
