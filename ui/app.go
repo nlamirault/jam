@@ -120,8 +120,8 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 			},
 			Offset: 0,
 			CurPos: map[bool]int{
-				false: -1, // same as in scrOffset. -1 is because the artist is unfolded (yet)
-				true:  0,
+				false: 1, // same as in scrOffset. -1 is because the artist is unfolded (yet)
+				true:  2,
 			},
 			NumAlbum: map[bool]int{
 				false: -1, // same as in scrOffset. -1 is because the artist is unfolded (yet)
@@ -137,8 +137,9 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 }
 
 func (app *App) Run() {
+	defer app.Screen.Fini()
 	app.populateArtists()
-	log.Fatalf("Artists done")
+	// log.Printf("Artists done")
 	go app.player()
 	app.mainLoop()
 }
