@@ -89,11 +89,11 @@ func player(s tcell.Screen) {
 							}
 						}
 					case <-stop:
+						playing = false
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
-
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &bTrack{}
