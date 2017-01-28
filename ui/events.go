@@ -152,8 +152,8 @@ func (app *App) upEntry() {
 				} else {
 					app.Status.ScrOffset[true]--
 				}
-				// app.Songs = app.Songs[app.Albums[app.Artists[app.Status.CurPos[false]-1+app.Status.ScrOffset[false]]][app.Status.NumAlbum[true]]]
-				app.Status.NumTrack = len(app.Songs) - 1
+				songs := app.Songs[app.Albums[app.Artists[app.Status.CurPos[false]-1+app.Status.ScrOffset[false]]][app.Status.NumAlbum[true]]]
+				app.Status.NumTrack = len(songs) - 1
 			} else if app.Status.CurPos[true] < 3 {
 				return
 			}
