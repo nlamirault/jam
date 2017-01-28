@@ -76,3 +76,13 @@ space - toggle albums
 R - randomize artists
 
 [1] https://github.com/mjibson/moggio
+
+
+
+TODO
+- make the interface detachable (like MOC)
+- make the binary able to receive comand line arguments for controlling playback
+  (next track, pause, etc)
+- implement search within the GPM global database
+- feature requests are welcome as well
+
