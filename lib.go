@@ -90,6 +90,13 @@ func refreshLibrary() {
 				}
 				continue
 			} else {
+				if tracks[i].Artist == "" {
+					if tracks[i].AlbumArtist == "" {
+						tracks[i].Artist = "Unknown Artist"
+					} else {
+						tracks[i].Artist = tracks[i].AlbumArtist
+					}
+				}
 				artist, err = lib.CreateBucketIfNotExists([]byte(tracks[i].Artist))
 				checkErr(err)
 			}
