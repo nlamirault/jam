@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package music
 
 import (
 	"encoding/binary"
@@ -26,9 +26,10 @@ import (
 	"strconv"
 
 	"github.com/boltdb/bolt"
+	"github.com/budkin/gmusic"
 )
 
-type bTrack struct {
+type BTrack struct {
 	//AlbumArtist    string
 	DiscNumber     uint8
 	TrackNumber    uint32
@@ -40,34 +41,38 @@ type bTrack struct {
 	Year           int
 }
 
-func refreshLibrary() {
-	//db, err := bolt.Open(fullDbPath(), 0600, nil)
-	//checkErr(err)
-	//defer db.Close()
-
+func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
 	tracks, err := gm.ListTracks()
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		tx.DeleteBucket([]byte("Library"))
-
+		_ = tx.DeleteBucket([]byte("Library"))
 		lib, err := tx.CreateBucketIfNotExists([]byte("Library"))
-		checkErr(err)
+		if err != nil {
+			return err
+		}
 		for _, t := range tracks {
 			artist, err := lib.CreateBucketIfNotExists([]byte(t.Artist))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			if t.Album == "" {
 				t.Album = "Unknown Album"
 			}
 			album, err := artist.CreateBucketIfNotExists([]byte(t.Album))
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 
 			//id, _ := album.NextSequence()
 
-			bt := bTrack{t.DiscNumber, t.TrackNumber, t.DurationMillis,
-				t.EstimatedSize, t.ID, t.PlayCount, t.Title, t.Year}
+			bt := BTrack{t.DiscNumber, t.TrackNumber, t.DurationMillis, t.EstimatedSize, t.ID, t.PlayCount, t.Title, t.Year}
 			//trackNumber, _ := album.NextSequence()
 			buf, err := json.Marshal(bt)
-			checkErr(err)
+			if err != nil {
+				return err
+			}
 			var key string
 			if t.TrackNumber < 10 {
 				key = strconv.Itoa(int(t.DiscNumber)) + "0" + strconv.Itoa(int(t.TrackNumber))
@@ -76,13 +81,14 @@ func refreshLibrary() {
 			}
 
 			err = album.Put([]byte(key), buf)
-			checkErr(err)
-
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
 	})
-
+	return nil
 }
 
 func itob(v uint64) []byte {

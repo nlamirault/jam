@@ -27,7 +27,11 @@ import (
 	"os"
 
 	"github.com/boltdb/bolt"
+	"github.com/budkin/gmusic"
 
+	"github.com/budkin/jam/auth"
+	"github.com/budkin/jam/storage"
+	"github.com/budkin/jam/ui"
 	"github.com/budkin/jam/version"
 )
 
@@ -60,23 +64,38 @@ func init() {
 }
 
 func main() {
-
-	var err error
-	db, err = bolt.Open(fullDbPath(), 0600, nil)
-	checkErr(err)
-	defer db.Close()
-	checkCreds()
-	//refreshLibrary()
-	initUI()
-	//play(g)
-
-}
-
-func checkErr(e error) {
-	if e != nil {
-		if debug {
-			panic(e)
-		}
-		log.Fatal(e)
+	db, err := storage.Open()
+	if err != nil {
+		log.Fatalf("Can't open database: %s", err)
+		os.Exit(1)
 	}
+	gmusic, err := auth.CheckCreds(db)
+	if err != nil {
+		log.Fatalf("Can't connect to Google Music: %s", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+	if err = doUI(gmusic, db); err != nil {
+		log.Fatalf("Can't start UI: %s", err)
+		os.Exit(1)
+	}
+
 }
+
+func doUI(gmusic *gmusic.GMusic, db *bolt.DB) error {
+	app, err := ui.New(gmusic, db)
+	if err != nil {
+		return err
+	}
+	app.Run()
+	return nil
+}
+
+// func checkErr(e error) {
+// 	if e != nil {
+// 		if debug {
+// 			panic(e)
+// 		}
+// 		log.Fatal(e)
+// 	}
+// }

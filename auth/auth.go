@@ -18,62 +18,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package auth
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
-	"runtime"
 
 	"github.com/boltdb/bolt"
 	"github.com/budkin/gmusic"
 	"github.com/howeyc/gopass"
+
+	"github.com/budkin/jam/music"
+	"github.com/budkin/jam/storage"
 )
 
-func fullDbPath() string {
-	if runtime.GOOS == "windows" {
-		return filepath.Join(os.Getenv("APPDATA"), "jamdb")
-	}
-	return filepath.Join(os.Getenv("HOME"), ".local/share/jamdb")
-}
-
-func checkCreds() {
-	err := db.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("#AuthDetails"))
-		if b == nil {
-			return errors.New("no bucket")
-		}
-		gm = &gmusic.GMusic{
-			Auth:     string(b.Get([]byte("Auth"))),
-			DeviceID: string(b.Get([]byte("DeviceID"))),
-		}
-		return nil
-	})
-
+func loginFromDatabase(db *bolt.DB) (*gmusic.GMusic, error) {
+	auth, deviceID, err := storage.ReadCredentials(db)
 	if err != nil {
-		err = authenticate()
-		checkErr(err)
-		refreshLibrary()
-		err = db.Update(func(tx *bolt.Tx) error {
-			b, err := tx.CreateBucketIfNotExists([]byte("#AuthDetails"))
-			checkErr(err)
-
-			err = b.Put([]byte("Auth"), []byte(gm.Auth))
-			err = b.Put([]byte("DeviceID"), []byte(gm.DeviceID))
-
-			return err
-		})
+		return nil, err
 	}
+	return &gmusic.GMusic{
+		Auth:     string(auth),
+		DeviceID: string(deviceID),
+	}, nil
 }
 
-func authenticate() error {
+func CheckCreds(db *bolt.DB) (*gmusic.GMusic, error) {
+	gm, err := loginFromDatabase(db)
+	if err != nil {
+		gm, err = authenticate()
+		if err != nil {
+			return nil, err
+		}
+	}
+	music.RefreshLibrary(db, gm)
+	err = storage.WriteCredentials(db, gm.Auth, gm.DeviceID)
+	if err != nil {
+		return nil, err
+	}
+	return gm, nil
+}
+
+func authenticate() (*gmusic.GMusic, error) {
 	email := askForEmail()
-	password := askForPassword()
-	var err error
-	gm, err = gmusic.Login(email, string(password))
-	return err
+	password, err := askForPassword()
+	if err != nil {
+		return nil, err
+	}
+	return gmusic.Login(email, string(password))
 }
 
 func askForEmail() string {
@@ -83,10 +74,12 @@ func askForEmail() string {
 	return email
 }
 
-func askForPassword() []byte {
+func askForPassword() ([]byte, error) {
 	var password []byte
 	fmt.Print("Password: ")
 	password, err := gopass.GetPasswdMasked()
-	checkErr(err)
-	return password
+	if err != nil {
+		return nil, err
+	}
+	return password, nil
 }
