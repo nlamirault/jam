@@ -26,12 +26,12 @@ import (
 
 func (app *App) numAlb(k int) int {
 	var i int
-	log.Fatalf("Artists: %s %d %d", app.Artists, len(app.Artists), k)
+	log.Printf("Artists: %s %d %d", app.Artists, len(app.Artists), k)
 	for app.Artists[k] == "" {
 		i++
 		k--
 	}
-	log.Fatalf("=+> %d", i)
+	log.Printf("=+> %d", i)
 	return i
 
 }

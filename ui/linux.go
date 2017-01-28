@@ -96,6 +96,7 @@ func (app *App) player() {
 							}
 						}
 					case <-stop:
+						playing = false
 						pauseDur = time.Duration(0)
 						return
 					default:

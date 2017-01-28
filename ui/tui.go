@@ -27,7 +27,6 @@ import (
 	"strconv"
 	"time"
 
-	// "github.com/gdamore/tcell"
 	runewidth "github.com/mattn/go-runewidth"
 
 	"github.com/budkin/jam/music"

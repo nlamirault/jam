@@ -138,6 +138,7 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 
 func (app *App) Run() {
 	app.populateArtists()
+	log.Fatalf("Artists done")
 	go app.player()
 	app.mainLoop()
 }
@@ -166,7 +167,7 @@ func (app *App) populateArtists() {
 			app.Artists = append(app.Artists, k)
 		}
 		app.Artists.Sort()
-
+		// log.Printf("Artists: %s", app.Artists)
 		return nil
 	})
 }

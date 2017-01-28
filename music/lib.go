@@ -30,7 +30,7 @@ import (
 )
 
 type BTrack struct {
-	//AlbumArtist    string
+	Artist         string
 	DiscNumber     uint8
 	TrackNumber    uint32
 	DurationMillis string
@@ -42,42 +42,94 @@ type BTrack struct {
 }
 
 func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
+	//db, err := bolt.Open(fullDbPath(), 0600, nil)
+	//checkErr(err)
+	//defer db.Close()
+	var artist *bolt.Bucket
+	var err error
+	var key string
+	var temp int
+	var mixedAlbum bool
+	var buf []byte
 	tracks, err := gm.ListTracks()
 	if err != nil {
 		return err
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
-		_ = tx.DeleteBucket([]byte("Library"))
+		tx.DeleteBucket([]byte("Library"))
+
 		lib, err := tx.CreateBucketIfNotExists([]byte("Library"))
 		if err != nil {
 			return err
 		}
-		for _, t := range tracks {
-			artist, err := lib.CreateBucketIfNotExists([]byte(t.Artist))
-			if err != nil {
-				return err
-			}
-			if t.Album == "" {
-				t.Album = "Unknown Album"
-			}
-			album, err := artist.CreateBucketIfNotExists([]byte(t.Album))
-			if err != nil {
-				return err
+		for i := 0; i < len(tracks); i++ {
+			temp = i + 1
+			for mixedAlbum = false; temp < len(tracks) && tracks[temp].Album == tracks[i].Album; temp++ {
+				if tracks[temp].Artist != tracks[i].Artist {
+					mixedAlbum = true
+				}
 			}
 
-			//id, _ := album.NextSequence()
+			if mixedAlbum {
+				artist, err = lib.CreateBucketIfNotExists([]byte("Various Artists"))
+				if err != nil {
+					return err
+				}
 
-			bt := BTrack{t.DiscNumber, t.TrackNumber, t.DurationMillis, t.EstimatedSize, t.ID, t.PlayCount, t.Title, t.Year}
-			//trackNumber, _ := album.NextSequence()
-			buf, err := json.Marshal(bt)
-			if err != nil {
-				return err
-			}
-			var key string
-			if t.TrackNumber < 10 {
-				key = strconv.Itoa(int(t.DiscNumber)) + "0" + strconv.Itoa(int(t.TrackNumber))
+				if tracks[i].Album == "" {
+					tracks[i].Album = "Unknown Album"
+				}
+				album, err := artist.CreateBucketIfNotExists([]byte(tracks[i].Album))
+				if err != nil {
+					return err
+				}
+				for i < temp {
+					bt := BTrack{tracks[i].Artist, tracks[i].DiscNumber, tracks[i].TrackNumber, tracks[i].DurationMillis,
+						tracks[i].EstimatedSize, tracks[i].ID, tracks[i].PlayCount, tracks[i].Title, tracks[i].Year}
+					buf, err = json.Marshal(bt)
+					if err != nil {
+						return err
+					}
+
+					if tracks[i].TrackNumber < 10 {
+						key = strconv.Itoa(int(tracks[i].DiscNumber)) + "0" + strconv.Itoa(int(tracks[i].TrackNumber))
+					} else {
+						key = strconv.Itoa(int(tracks[i].DiscNumber)) + strconv.Itoa(int(tracks[i].TrackNumber))
+					}
+
+					err = album.Put([]byte(key), buf)
+					if err != nil {
+						return err
+					}
+					i++
+				}
+				continue
 			} else {
-				key = strconv.Itoa(int(t.DiscNumber)) + strconv.Itoa(int(t.TrackNumber))
+				artist, err = lib.CreateBucketIfNotExists([]byte(tracks[i].Artist))
+				if err != nil {
+					return err
+				}
+
+			}
+			if tracks[i].Album == "" {
+				tracks[i].Album = "Unknown Album"
+			}
+			album, err := artist.CreateBucketIfNotExists([]byte(tracks[i].Album))
+			if err != nil {
+				return err
+			}
+
+			bt := BTrack{tracks[i].Artist, tracks[i].DiscNumber, tracks[i].TrackNumber, tracks[i].DurationMillis,
+				tracks[i].EstimatedSize, tracks[i].ID, tracks[i].PlayCount, tracks[i].Title, tracks[i].Year}
+			buf, err = json.Marshal(bt)
+			if err != nil {
+				return err
+			}
+
+			if tracks[i].TrackNumber < 10 {
+				key = strconv.Itoa(int(tracks[i].DiscNumber)) + "0" + strconv.Itoa(int(tracks[i].TrackNumber))
+			} else {
+				key = strconv.Itoa(int(tracks[i].DiscNumber)) + strconv.Itoa(int(tracks[i].TrackNumber))
 			}
 
 			err = album.Put([]byte(key), buf)
@@ -88,7 +140,7 @@ func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
 
 		return nil
 	})
-	return nil
+	return err
 }
 
 func itob(v uint64) []byte {
