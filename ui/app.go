@@ -109,10 +109,10 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 		Height:     height,
 		GMusic:     gmusic,
 		DB:         db,
-		ArtistsMap: make(map[string]bool),
+		ArtistsMap: map[string]bool{},
 		Artists:    sort.StringSlice{},
-		Songs:      make(map[string][]string),
-		Albums:     make(map[string][]string),
+		Songs:      map[string][]string{},
+		Albums:     map[string][]string{},
 		Status: &Status{
 			ScrOffset: map[bool]int{
 				false: 0, // in artists view
@@ -275,7 +275,7 @@ func (app *App) mainLoop() {
 			width, height := app.Screen.Size()
 			app.Width = width
 			app.Height = height
-			// updateUI(s)
+			app.updateUI()
 		case *tcell.EventKey:
 			switch ev.Key() {
 			case tcell.KeyEscape:
@@ -295,9 +295,9 @@ func (app *App) mainLoop() {
 			case tcell.KeyDown:
 				app.downEntry()
 			case tcell.KeyEnter:
-				// app.Status.State <- play
-				// i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
-				// app.Status.CurArtist <- app.Artists[i-app.Status.NumAlbum(i)]
+				app.Status.State <- play
+				i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
+				app.Status.CurArtist <- app.Artists[i-app.numAlb(i)]
 			}
 			switch ev.Rune() {
 			case '/':
@@ -311,12 +311,15 @@ func (app *App) mainLoop() {
 			case ' ':
 				app.toggleAlbums()
 			case 'u':
-				music.RefreshLibrary(app.DB, app.GMusic)
+				err := music.RefreshLibrary(app.DB, app.GMusic)
+				if err != nil {
+					log.Fatalf("Can't refresh library: %s", err)
+				}
 				app.populateArtists()
 			case 'x':
-				// app.Status.State <- play
-				// i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
-				// app.Status.CurArtist <- app.Artists[i-app.Status.NumAlbum(i)]
+				app.Status.State <- play
+				i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
+				app.Status.CurArtist <- app.Artists[i-app.numAlb(i)]
 			case 'v':
 				app.Status.State <- stop
 			case 'c':
