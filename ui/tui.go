@@ -72,7 +72,7 @@ func (app *App) hlEntry() {
 		song := app.Songs[app.Albums[app.Artists[i-app.numAlb(i)]][app.Status.NumAlbum[true]]][app.Status.NumTrack]
 		js := new(music.BTrack)
 		json.Unmarshal([]byte(song), js)
-		printSingleItem(app.Screen, app.Width/3+2, app.Status.CurPos[app.Status.InTracks], hlStyle, makeSongLine(js, app.Width), 0, false, app.Width)
+		printSingleItem(app.Screen, app.Width/3+2, app.Status.CurPos[app.Status.InTracks], hlStyle, app.makeSongLine(js), 0, false, app.Width)
 	}
 }
 func (app *App) printHeader() {
@@ -164,7 +164,7 @@ func (app *App) printSongs(beg, end int) {
 				js = new(music.BTrack)
 				json.Unmarshal([]byte(song), js)
 				if i >= beg && i < end {
-					printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, makeSongLine(js, app.Width), 0, false, app.Width)
+					printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, app.makeSongLine(js), 0, false, app.Width)
 					que = append(que, js)
 					k++
 				}
@@ -184,7 +184,7 @@ func (app *App) printSongs(beg, end int) {
 			js := new(music.BTrack)
 			json.Unmarshal([]byte(song), js)
 			if i >= beg {
-				printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, makeSongLine(js, app.Width), 0, false, app.Width)
+				printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, app.makeSongLine(js), 0, false, app.Width)
 				que = append(que, js)
 				k++
 			}

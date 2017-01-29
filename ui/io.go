@@ -31,7 +31,7 @@ import (
 	"github.com/budkin/jam/music"
 )
 
-func makeSongLine(track *music.BTrack, width int) string {
+func (app *App) makeSongLine(track *music.BTrack) string {
 	var res string
 	length := 0
 
@@ -47,12 +47,12 @@ func makeSongLine(track *music.BTrack, width int) string {
 		length += runewidth.RuneWidth(c)
 	}
 
-	for length < width-width/3+2-16 {
+	for length < app.Width-app.Width/3+2-16 {
 		res += " "
 		length++
 	}
 
-	for length > width-width/3+2-16 {
+	for length > app.Width-app.Width/3+2-16 {
 		run := []rune(res)
 		length -= runewidth.RuneWidth(run[len(run)-1])
 		run = run[:len(run)-1]

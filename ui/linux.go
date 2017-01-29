@@ -104,7 +104,7 @@ func (app *App) player() {
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
-							defArtist = ""
+							// defArtist = ""
 						}()
 						playing = true
 
