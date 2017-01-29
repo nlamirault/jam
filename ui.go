@@ -162,10 +162,23 @@ func mainLoop(s tcell.Screen) {
 	}
 }
 func randomizeArtists(s tcell.Screen) {
-	var temp = make(sort.StringSlice, len(artists))
+	var numAlbums int
+	for i, art := range artists {
+		if art == "" {
+			numAlbums++
+			artistsMap[artists[i-numAlb(i)]] = false
+		}
+	}
+
+	var temp = make(sort.StringSlice, len(artists)-numAlbums)
 	perm := rand.Perm(len(artists))
-	for i, v := range perm {
-		temp[v] = artists[i]
+	var index int
+	for _, v := range perm {
+		if artists[v] == "" {
+			continue
+		}
+		temp[index] = artists[v]
+		index++
 	}
 
 	artists = temp
