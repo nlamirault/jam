@@ -138,6 +138,7 @@ func (app *App) printAlbum(y int, alb string) {
 
 func (app *App) printSongs(beg, end int) {
 	// queue = [][]*music.BTrack{}
+	app.Status.Queue = [][]*music.BTrack{}
 	app.populateSongs()
 	i, k := 0, 1
 	if app.Status.NumAlbum[false] == -1 {
