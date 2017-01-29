@@ -20,19 +20,21 @@
 
 // +build linux
 
-package main
+package ui
 
 import (
 	"io"
+	"log"
 	"time"
 
-	"github.com/gdamore/tcell"
 	"github.com/korandiz/mpa"
 
 	pulse "github.com/mesilliac/pulse-simple"
+
+	"github.com/budkin/jam/music"
 )
 
-func player(s tcell.Screen) {
+func (app *App) player() {
 	stop := make(chan bool)
 	pause := make(chan bool)
 	playing := false
@@ -43,7 +45,9 @@ func player(s tcell.Screen) {
 
 	ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, 44100, 2}
 	stream, err := pulse.Playback("jam", "jam", &ss)
-	checkErr(err)
+	if err != nil {
+		log.Fatalf("Can't playback from Pulse: %s", err)
+	}
 	defer stream.Free()
 	defer stream.Drain()
 
@@ -53,7 +57,7 @@ func player(s tcell.Screen) {
 
 	//var buff [2][]float32
 	for {
-		switch <-state {
+		switch <-app.Status.State {
 		case 0:
 			if paused {
 				pause <- true
@@ -62,14 +66,20 @@ func player(s tcell.Screen) {
 				stop <- true
 			}
 
-			album := numAlbum[true]
-			ntrack := numTrack
-			queueTemp := make([][]*bTrack, len(queue))
-			copy(queueTemp, queue)
+			album := app.Status.NumAlbum[true]
+			ntrack := app.Status.NumTrack
+			queueTemp := make([][]*music.BTrack, len(app.Status.Queue))
+			copy(queueTemp, app.Status.Queue)
 
 			track := queueTemp[album][ntrack]
-			song, err := gm.GetStream(track.ID)
-			checkErr(err)
+			song, err := app.GMusic.GetStream(track.ID)
+			if err != nil {
+				log.Fatalf("Can't play stream: %s", err)
+			}
+			defDur = time.Duration(0)
+			defTrack = &music.BTrack{}
+			app.updateUI()
+
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
@@ -80,28 +90,47 @@ func player(s tcell.Screen) {
 					case <-pause:
 						pauseDur = defDur
 						paused = true
+					loop:
 						for {
-							if <-pause {
+							select {
+							case <-stop:
+								pauseDur = time.Duration(0)
+								paused = false
+								return
+							case <-pause:
 								timer = time.Now()
 								paused = false
-								break
+								break loop
 							}
 						}
 					case <-stop:
+<<<<<<< HEAD:linux.go
 						playing = false
+=======
+						paused = false
+>>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
 							playing = false
 							defDur = time.Duration(0)
+<<<<<<< HEAD:linux.go
 							defTrack = &bTrack{}
+=======
+							defTrack = &music.BTrack{}
+							app.updateUI()
+>>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 						}()
 						playing = true
 
 						defDur = time.Since(timer) + pauseDur
 						defTrack = track
+<<<<<<< HEAD:linux.go
 						printBar(s, defDur, defTrack)
+=======
+						app.printBar(defDur, defTrack)
+>>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 
 						//buf := new(bytes.Buffer)
 
@@ -137,22 +166,30 @@ func player(s tcell.Screen) {
 							}
 
 							track = queueTemp[album][ntrack]
-							song, err = gm.GetStream(track.ID)
-							checkErr(err)
+							song, err = app.GMusic.GetStream(track.ID)
+							if err != nil {
+								log.Fatalf("Can't get stream: %s", err)
+							}
 							//d = mpa.Decoder{Input: song.Body}
 							r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
-							checkErr(err)
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
+<<<<<<< HEAD:linux.go
 							defTrack = &bTrack{}
 							updateUI(s)
+=======
+							defTrack = &music.BTrack{}
+							app.updateUI()
+>>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 
 							timer = time.Now()
 							continue
 						}
 
 						i, err = stream.Write(data)
-						checkErr(err)
+						if err != nil {
+							log.Fatalf("Can't write stream: %s", err)
+						}
 
 					}
 				}

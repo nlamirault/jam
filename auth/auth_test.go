@@ -18,17 +18,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package auth
 
 import (
-	// "fmt"
-	"strings"
+	"io/ioutil"
+	"os"
 	"testing"
+
+	"github.com/boltdb/bolt"
 )
 
-func Test_FullPathDirectory(t *testing.T) {
-	dir := fullDbPath()
-	if !strings.HasSuffix(dir, ".local/share/jamdb") {
-		t.Fatalf("Invalid directory: %s\n", dir)
+// tempfile returns a temporary file path.
+func tempfile() (string, error) {
+	f, _ := ioutil.TempFile("", "jamdb")
+	err := f.Close()
+	if err != nil {
+		return "", err
+	}
+	err = os.Remove(f.Name())
+	if err != nil {
+		return "", err
+	}
+	return f.Name(), nil
+}
+
+func getDatabase(t *testing.T) *bolt.DB {
+	tf, err := tempfile()
+	if err != nil {
+		t.Fatalf("Can't create temporary file: %v", err)
+	}
+	db, err := bolt.Open(tf, 0600, nil)
+	if err != nil {
+		t.Fatalf("Can't create BoltDB test database.")
+	}
+	return db
+}
+
+func Test_LoginWithEmptyConfiguration(t *testing.T) {
+	db := getDatabase(t)
+	_, err := loginFromDatabase(db)
+	if err == nil {
+		t.Fatalf("Invalid process for auth: %s", err)
 	}
 }
