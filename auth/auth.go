@@ -49,8 +49,8 @@ func CheckCreds(db *bolt.DB) (*gmusic.GMusic, error) {
 		if err != nil {
 			return nil, err
 		}
+		err = music.RefreshLibrary(db, gm)
 	}
-	err = music.RefreshLibrary(db, gm)
 	if err != nil {
 		return nil, err
 	}
