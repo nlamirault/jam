@@ -67,17 +67,14 @@ func main() {
 	db, err := storage.Open()
 	if err != nil {
 		log.Fatalf("Can't open database: %s", err)
-		os.Exit(1)
 	}
 	gmusic, err := auth.CheckCreds(db)
 	if err != nil {
 		log.Fatalf("Can't connect to Google Music: %s", err)
-		os.Exit(1)
 	}
 	defer db.Close()
 	if err = doUI(gmusic, db); err != nil {
 		log.Fatalf("Can't start UI: %s", err)
-		os.Exit(1)
 	}
 
 }
