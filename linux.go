@@ -73,7 +73,6 @@ func player(s tcell.Screen) {
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
-			artist := <-curArtist
 			timer := time.Now()
 			go func() {
 				for {
@@ -97,14 +96,12 @@ func player(s tcell.Screen) {
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &bTrack{}
-							defArtist = ""
 						}()
 						playing = true
 
 						defDur = time.Since(timer) + pauseDur
 						defTrack = track
-						defArtist = artist
-						printBar(s, defDur, defTrack, defArtist)
+						printBar(s, defDur, defTrack)
 
 						//buf := new(bytes.Buffer)
 
@@ -148,7 +145,6 @@ func player(s tcell.Screen) {
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
 							defTrack = &bTrack{}
-							defArtist = ""
 							updateUI(s)
 
 							timer = time.Now()

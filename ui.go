@@ -70,9 +70,8 @@ var (
 	gm        = new(gmusic.GMusic) // gmusic instance
 	state     = make(chan int)     // player's state: play, pause, stop, etc
 
-	defDur    = time.Duration(0) // this and below are used for when nothing is playing
-	defTrack  = &bTrack{}
-	defArtist = ""
+	defDur   = time.Duration(0) // this and below are used for when nothing is playing
+	defTrack = &bTrack{}
 )
 
 const (
@@ -128,8 +127,6 @@ func mainLoop(s tcell.Screen) {
 				downEntry(s)
 			case tcell.KeyEnter:
 				state <- play
-				i := curPos[false] - 1 + scrOffset[false]
-				curArtist <- artists[i-numAlb(i)]
 			}
 			switch ev.Rune() {
 			case '/':
@@ -147,8 +144,6 @@ func mainLoop(s tcell.Screen) {
 				populateArtists()
 			case 'x':
 				state <- play
-				i := curPos[false] - 1 + scrOffset[false]
-				curArtist <- artists[i-numAlb(i)]
 			case 'v':
 				state <- stop
 			case 'c':
@@ -250,9 +245,9 @@ func printStatus(s tcell.Screen) {
 	}
 }
 
-func printBar(s tcell.Screen, dur time.Duration, track *bTrack, artist string) {
+func printBar(s tcell.Screen, dur time.Duration, track *bTrack) {
 	strdur := ""
-	str := fmt.Sprintf(" %02v:%02v %v - %v ", int(dur.Minutes()), int(dur.Seconds())%60, artist, track.Title)
+	str := fmt.Sprintf(" %02v:%02v %v - %v ", int(dur.Minutes()), int(dur.Seconds())%60, track.Artist, track.Title)
 	lenstr := 0
 	for _, r := range str {
 		lenstr += runewidth.RuneWidth(r)
@@ -381,7 +376,7 @@ func updateUI(s tcell.Screen) {
 		hlEntry(s)
 	}
 	printStatus(s)
-	printBar(s, defDur, defTrack, defArtist)
+	printBar(s, defDur, defTrack)
 }
 
 func printHeader(s tcell.Screen) {
