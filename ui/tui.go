@@ -62,9 +62,9 @@ func (app *App) updateUI() {
 func (app *App) hlEntry() {
 	i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
 	if app.Artists[i] != "" {
-		printSingleItem(app.Screen, 0, app.Status.CurPos[false], HlStyle, app.Artists[i], 1, true, app.Width)
+		printSingleItem(app.Screen, 0, app.Status.CurPos[false], hlStyle, app.Artists[i], 1, true, app.Width)
 	} else {
-		printSingleItem(app.Screen, 0, app.Status.CurPos[false], HlStyle, app.Albums[app.Artists[i-app.numAlb(i)]][app.numAlb(i)-1], 3, true, app.Width)
+		printSingleItem(app.Screen, 0, app.Status.CurPos[false], hlStyle, app.Albums[app.Artists[i-app.numAlb(i)]][app.numAlb(i)-1], 3, true, app.Width)
 
 	}
 
@@ -72,15 +72,15 @@ func (app *App) hlEntry() {
 		song := app.Songs[app.Albums[app.Artists[i-app.numAlb(i)]][app.Status.NumAlbum[true]]][app.Status.NumTrack]
 		js := new(music.BTrack)
 		json.Unmarshal([]byte(song), js)
-		printSingleItem(app.Screen, app.Width/3+2, app.Status.CurPos[app.Status.InTracks], HlStyle, makeSongLine(js, app.Width), 0, false, app.Width)
+		printSingleItem(app.Screen, app.Width/3+2, app.Status.CurPos[app.Status.InTracks], hlStyle, makeSongLine(js, app.Width), 0, false, app.Width)
 	}
 }
 func (app *App) printHeader() {
-	fill(app.Screen, 0, 0, app.Width, 1, ' ', HlStyle)
-	print(app.Screen, 1, 0, HlStyle, "Artist / Album")
-	print(app.Screen, app.Width/3+2, 0, HlStyle, "Track")
-	print(app.Screen, app.Width-8, 0, HlStyle, "Library")
-	fill(app.Screen, 0, app.Height-2, app.Width, 1, ' ', HlStyle)
+	fill(app.Screen, 0, 0, app.Width, 1, ' ', hlStyle)
+	print(app.Screen, 1, 0, hlStyle, "Artist / Album")
+	print(app.Screen, app.Width/3+2, 0, hlStyle, "Track")
+	print(app.Screen, app.Width-8, 0, hlStyle, "Library")
+	fill(app.Screen, 0, app.Height-2, app.Width, 1, ' ', hlStyle)
 }
 
 func (app *App) printStatus() {
@@ -99,14 +99,14 @@ func (app *App) printBar(dur time.Duration, track *music.BTrack, artist string) 
 	for _, r := range str {
 		lenstr += runewidth.RuneWidth(r)
 	}
-	print(app.Screen, 0, app.Height-2, BarStyle, str)
+	print(app.Screen, 0, app.Height-2, barStyle, str)
 	leng := app.Width - lenstr
 	durat, _ := strconv.Atoi(track.DurationMillis)
 	dura := time.Duration(durat) * time.Millisecond
 	for i := 0.0; i < float64(leng)/dura.Seconds()*dur.Seconds(); i += 1.0 {
 		strdur += "—"
 	}
-	print(app.Screen, lenstr, app.Height-2, BarStyle, strdur)
+	print(app.Screen, lenstr, app.Height-2, barStyle, strdur)
 	app.Screen.Show()
 }
 
@@ -132,7 +132,7 @@ func (app *App) printArtists(beg, end int) {
 
 func (app *App) printAlbum(y int, alb string) {
 	makeAlbumLine(&alb, app.Width)
-	print(app.Screen, app.Width/3+2, y, AlStyle, alb)
+	print(app.Screen, app.Width/3+2, y, alStyle, alb)
 
 }
 

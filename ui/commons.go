@@ -30,30 +30,33 @@ const (
 )
 
 var (
-	StyleNormal = tcell.StyleDefault.
+	styleNormal = tcell.StyleDefault.
 			Foreground(tcell.ColorSilver).
 			Background(tcell.ColorBlack)
-	StyleGood = tcell.StyleDefault.
+	styleGood = tcell.StyleDefault.
 			Foreground(tcell.ColorGreen).
 			Background(tcell.ColorBlack)
-	StyleWarn = tcell.StyleDefault.
+	styleWarn = tcell.StyleDefault.
 			Foreground(tcell.ColorYellow).
 			Background(tcell.ColorBlack)
-	StyleError = tcell.StyleDefault.
+	styleError = tcell.StyleDefault.
 			Foreground(tcell.ColorMaroon).
 			Background(tcell.ColorBlack)
 
-	// HlStyle  = tcell.StyleDefault.Bold(true).Reverse(true) // highlight tcell style
-	BarStyle = tcell.StyleDefault.Reverse(true) // tcell style used for bars
-	// AlStyle  = tcell.StyleDefault.Bold(true)               // tcell style usef for albums in tracks view
+	// highlight tcell style
+	hlStyle = tcell.StyleDefault.Bold(true).Reverse(true)
+	// tcell style used for bars
+	barStyle = tcell.StyleDefault.Reverse(true)
+	// tcell style usef for albums in tracks view
+	alStyle = tcell.StyleDefault.Bold(true)
 
-	HlStyle = tcell.StyleDefault.
-		Bold(true).
-		Foreground(tcell.ColorYellow)
+	// hlStyle = tcell.StyleDefault.
+	// 	Bold(true).
+	// 	Foreground(tcell.ColorYellow)
 
-	AlStyle = tcell.StyleDefault.
-		Bold(true).
-		Foreground(tcell.ColorGreen)
+	// alStyle = tcell.StyleDefault.
+	// 	Bold(true).
+	// 	Foreground(tcell.ColorGreen)
 )
 
 func fill(screen tcell.Screen, x, y, w, h int, v rune, stl tcell.Style) {
