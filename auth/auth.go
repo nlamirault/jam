@@ -18,81 +18,71 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package auth
 
 import (
-	"flag"
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/boltdb/bolt"
 	"github.com/budkin/gmusic"
+	"github.com/howeyc/gopass"
 
-	"github.com/budkin/jam/auth"
+	"github.com/budkin/jam/music"
 	"github.com/budkin/jam/storage"
-	"github.com/budkin/jam/ui"
-	"github.com/budkin/jam/version"
 )
 
-const (
-	// BANNER is what is printed for help/info output.
-	BANNER = "Jam - %s\n"
-)
-
-var (
-	vers  bool
-	debug bool
-)
-
-func init() {
-	// parse flags
-	flag.BoolVar(&vers, "version", false, "print version and exit")
-	flag.BoolVar(&debug, "debug", false, "debug")
-
-	flag.Usage = func() {
-		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.Version))
-		flag.PrintDefaults()
+func loginFromDatabase(db *bolt.DB) (*gmusic.GMusic, error) {
+	auth, deviceID, err := storage.ReadCredentials(db)
+	if err != nil {
+		return nil, err
 	}
-
-	flag.Parse()
-
-	if vers {
-		fmt.Printf("%s\n", version.Version)
-		os.Exit(0)
-	}
+	return &gmusic.GMusic{
+		Auth:     string(auth),
+		DeviceID: string(deviceID),
+	}, nil
 }
 
-func main() {
-	db, err := storage.Open()
+func CheckCreds(db *bolt.DB) (*gmusic.GMusic, error) {
+	gm, err := loginFromDatabase(db)
 	if err != nil {
-		log.Fatalf("Can't open database: %s", err)
+		gm, err = authenticate()
+		if err != nil {
+			return nil, err
+		}
+		err = music.RefreshLibrary(db, gm)
 	}
-	gmusic, err := auth.CheckCreds(db)
 	if err != nil {
-		log.Fatalf("Can't connect to Google Music: %s", err)
+		return nil, err
 	}
-	defer db.Close()
-	if err = doUI(gmusic, db); err != nil {
-		log.Fatalf("Can't start UI: %s", err)
+	err = storage.WriteCredentials(db, gm.Auth, gm.DeviceID)
+	if err != nil {
+		return nil, err
 	}
-
+	return gm, nil
 }
 
-func doUI(gmusic *gmusic.GMusic, db *bolt.DB) error {
-	app, err := ui.New(gmusic, db)
+func authenticate() (*gmusic.GMusic, error) {
+	email := askForEmail()
+	password, err := askForPassword()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	app.Run()
-	return nil
+	return gmusic.Login(email, string(password))
 }
 
-// func checkErr(e error) {
-// 	if e != nil {
-// 		if debug {
-// 			panic(e)
-// 		}
-// 		log.Fatal(e)
-// 	}
-// }
+func askForEmail() string {
+	var email string
+	fmt.Print("Email: ")
+	fmt.Scanln(&email)
+	return email
+}
+
+func askForPassword() ([]byte, error) {
+	var password []byte
+	fmt.Print("Password: ")
+	password, err := gopass.GetPasswdMasked()
+	if err != nil {
+		return nil, err
+	}
+	return password, nil
+}

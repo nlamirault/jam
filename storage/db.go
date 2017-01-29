@@ -18,18 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package main
+package storage
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
 
 	"github.com/boltdb/bolt"
-	"github.com/budkin/gmusic"
-	"github.com/howeyc/gopass"
 )
 
 func fullDbPath() string {
@@ -39,54 +36,36 @@ func fullDbPath() string {
 	return filepath.Join(os.Getenv("HOME"), ".local/share/jamdb")
 }
 
-func checkCreds() {
+func Open() (*bolt.DB, error) {
+	return bolt.Open(fullDbPath(), 0600, nil)
+}
+
+func ReadCredentials(db *bolt.DB) ([]byte, []byte, error) {
+	var auth []byte
+	var deviceID []byte
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("#AuthDetails"))
 		if b == nil {
-			return errors.New("no bucket")
+			return errors.New("No bucket into database")
 		}
-		gm = &gmusic.GMusic{
-			Auth:     string(b.Get([]byte("Auth"))),
-			DeviceID: string(b.Get([]byte("DeviceID"))),
-		}
+		auth = b.Get([]byte("Auth"))
+		deviceID = b.Get([]byte("DeviceID"))
 		return nil
 	})
-
 	if err != nil {
-		err = authenticate()
-		checkErr(err)
-		refreshLibrary()
-		err = db.Update(func(tx *bolt.Tx) error {
-			b, err := tx.CreateBucketIfNotExists([]byte("#AuthDetails"))
-			checkErr(err)
-
-			err = b.Put([]byte("Auth"), []byte(gm.Auth))
-			err = b.Put([]byte("DeviceID"), []byte(gm.DeviceID))
-
-			return err
-		})
+		return nil, nil, err
 	}
+	return auth, deviceID, nil
 }
 
-func authenticate() error {
-	email := askForEmail()
-	password := askForPassword()
-	var err error
-	gm, err = gmusic.Login(email, string(password))
-	return err
-}
-
-func askForEmail() string {
-	var email string
-	fmt.Print("Email: ")
-	fmt.Scanln(&email)
-	return email
-}
-
-func askForPassword() []byte {
-	var password []byte
-	fmt.Print("Password: ")
-	password, err := gopass.GetPasswdMasked()
-	checkErr(err)
-	return password
+func WriteCredentials(db *bolt.DB, auth string, deviceID string) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte("#AuthDetails"))
+		if err != nil {
+			return err
+		}
+		err = b.Put([]byte("Auth"), []byte(auth))
+		err = b.Put([]byte("DeviceID"), []byte(deviceID))
+		return err
+	})
 }
