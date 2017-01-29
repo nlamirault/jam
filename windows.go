@@ -154,10 +154,6 @@ func player(s tcell.Screen) {
 						}
 
 						_, err = wp.Write(data[:i])
-						if err == waveout.ErrLessChunks {
-							wp.Wait()
-							_, err = wp.Write(data[:i])
-						}
 						checkErr(err)
 					}
 				}
