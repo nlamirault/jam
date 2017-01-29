@@ -90,24 +90,29 @@ func (app *App) player() {
 					case <-pause:
 						pauseDur = defDur
 						paused = true
+					loop:
 						for {
-							if <-pause {
+							select {
+							case <-stop:
+								pauseDur = time.Duration(0)
+								paused = false
+								return
+							case <-pause:
 								timer = time.Now()
 								paused = false
-								break
+								break loop
 							}
 						}
 					case <-stop:
-						playing = false
+						paused = false
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
-
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
-							// defArtist = ""
+							app.updateUI()
 						}()
 						playing = true
 
