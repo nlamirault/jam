@@ -104,33 +104,21 @@ func (app *App) player() {
 							}
 						}
 					case <-stop:
-<<<<<<< HEAD:linux.go
 						playing = false
-=======
-						paused = false
->>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
 							playing = false
 							defDur = time.Duration(0)
-<<<<<<< HEAD:linux.go
-							defTrack = &bTrack{}
-=======
 							defTrack = &music.BTrack{}
 							app.updateUI()
->>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 						}()
 						playing = true
 
 						defDur = time.Since(timer) + pauseDur
 						defTrack = track
-<<<<<<< HEAD:linux.go
-						printBar(s, defDur, defTrack)
-=======
 						app.printBar(defDur, defTrack)
->>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 
 						//buf := new(bytes.Buffer)
 
@@ -174,13 +162,8 @@ func (app *App) player() {
 							r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
-<<<<<<< HEAD:linux.go
-							defTrack = &bTrack{}
-							updateUI(s)
-=======
 							defTrack = &music.BTrack{}
 							app.updateUI()
->>>>>>> 4a8c32969c1ad49642da05b282d5e6a9f2165068:ui/linux.go
 
 							timer = time.Now()
 							continue
