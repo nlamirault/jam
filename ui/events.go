@@ -254,6 +254,7 @@ func (app *App) downEntry() {
 	if !app.Status.InTracks {
 		if app.Artists[app.Status.CurPos[false]-1+app.Status.ScrOffset[false]] != "" {
 			app.Status.NumAlbum[false] = -1
+			app.Status.NumAlbum[true] = 0
 		} else {
 			app.Status.CurPos[true] = 1
 		}
