@@ -20,18 +20,19 @@
 
 // +build windows
 
-package main
+package ui
 
 import (
 	"io"
+	"log"
 	"time"
 
-	"github.com/gdamore/tcell"
 	"github.com/korandiz/mpa"
 	"github.com/koron/go-waveout"
+	"github.com/budkin/jam/music"
 )
 
-func player(s tcell.Screen) {
+func (app *App) player() {
 	stop := make(chan bool)
 	pause := make(chan bool)
 	playing := false
@@ -40,10 +41,15 @@ func player(s tcell.Screen) {
 	prev := false
 	pauseDur := time.Duration(0)
 
-	wp, err := waveout.New(2, 44100, 16)
-	checkErr(err)
-	err = wp.AppendChunks(2, 1024*8)
-	checkErr(err)
+	stream, err := waveout.New(2, 44100, 16)
+	if err != nil {
+		log.Fatalf("failed to create waveout: %s", err)
+	}
+	defer stream.Close()
+	err = stream.AppendChunks(8, 4096)
+	if err != nil {
+		log.Fatalf("failed to setup waveout: %s", err)
+	}
 
 	//var d mpa.Decoder
 	var r *mpa.Reader
@@ -51,7 +57,7 @@ func player(s tcell.Screen) {
 
 	//var buff [2][]float32
 	for {
-		switch <-state {
+		switch <-app.Status.State {
 		case 0:
 			if paused {
 				pause <- true
@@ -60,18 +66,23 @@ func player(s tcell.Screen) {
 				stop <- true
 			}
 
-			album := numAlbum[true]
-			ntrack := numTrack
-			queueTemp := make([][]*bTrack, len(queue))
-			copy(queueTemp, queue)
+			album := app.Status.NumAlbum[true]
+			ntrack := app.Status.NumTrack
+			queueTemp := make([][]*music.BTrack, len(app.Status.Queue))
+			copy(queueTemp, app.Status.Queue)
 
 			track := queueTemp[album][ntrack]
-			song, err := gm.GetStream(track.ID)
+			song, err := app.GMusic.GetStream(track.ID)
+			if err != nil {
+				log.Fatalf("Can't play stream: %s", err)
+			}
+			defDur = time.Duration(0)
+			defTrack = &music.BTrack{}
+			app.updateUI()
+
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
-			artist := <-curArtist
-			checkErr(err)
 			timer := time.Now()
 			go func() {
 				for {
@@ -79,30 +90,35 @@ func player(s tcell.Screen) {
 					case <-pause:
 						pauseDur = defDur
 						paused = true
+					loop:
 						for {
-							if <-pause {
+							select {
+							case <-stop:
+								pauseDur = time.Duration(0)
+								paused = false
+								return
+							case <-pause:
 								timer = time.Now()
 								paused = false
-								break
+								break loop
 							}
 						}
 					case <-stop:
+						playing = false
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
-
 							playing = false
 							defDur = time.Duration(0)
-							defTrack = &bTrack{}
-							defArtist = ""
+							defTrack = &music.BTrack{}
+							app.updateUI()
 						}()
 						playing = true
 
 						defDur = time.Since(timer) + pauseDur
 						defTrack = track
-						defArtist = artist
-						printBar(s, defDur, defTrack, defArtist)
+						app.printBar(defDur, defTrack)
 
 						//buf := new(bytes.Buffer)
 
@@ -138,23 +154,26 @@ func player(s tcell.Screen) {
 							}
 
 							track = queueTemp[album][ntrack]
-							song, err = gm.GetStream(track.ID)
-							checkErr(err)
+							song, err = app.GMusic.GetStream(track.ID)
+							if err != nil {
+								log.Fatalf("Can't get stream: %s", err)
+							}
 							//d = mpa.Decoder{Input: song.Body}
 							r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
-							checkErr(err)
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
-							defTrack = &bTrack{}
-							defArtist = ""
-							updateUI(s)
+							defTrack = &music.BTrack{}
+							app.updateUI()
 
 							timer = time.Now()
 							continue
 						}
 
-						_, err = wp.Write(data[:i])
-						checkErr(err)
+						i, err = stream.Write(data)
+						if err != nil {
+							log.Fatalf("Can't write stream: %s", err)
+						}
+
 					}
 				}
 			}()

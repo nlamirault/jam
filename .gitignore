@@ -1,1 +1,11 @@
+# Go
+jam
 jam.exe
+
+# Files
+.DS_Store
+
+# Editor swap files
+*.swp
+*.swo
+*.swn

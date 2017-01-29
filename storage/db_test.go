@@ -18,7 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package version
+package storage
 
-// Version represents the application version using SemVer
-const Version string = "0.3.2"
+import (
+	// "fmt"
+	"strings"
+	"testing"
+)
+
+func Test_FullPathDirectory(t *testing.T) {
+	dir := fullDbPath()
+	if !strings.HasSuffix(dir, ".local/share/jamdb") {
+		t.Fatalf("Invalid directory: %s\n", dir)
+	}
+}
