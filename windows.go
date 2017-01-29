@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell"
-	"github.com/hajimehoshi/ebiten/audio"
 	"github.com/korandiz/mpa"
+	"github.com/koron/go-waveout"
 )
 
 func player(s tcell.Screen) {
@@ -40,8 +40,11 @@ func player(s tcell.Screen) {
 	prev := false
 	pauseDur := time.Duration(0)
 
-	actx, err := audio.NewContext(44100)
+	wp, err := waveout.New(2, 44100, 16)
 	checkErr(err)
+	err = wp.AppendChunks(8, 8192)
+	checkErr(err)
+
 	//var d mpa.Decoder
 	var r *mpa.Reader
 	data := make([]byte, 1024*8)
@@ -150,9 +153,11 @@ func player(s tcell.Screen) {
 							continue
 						}
 
-						player, err := audio.NewPlayerFromBytes(actx, data)
-						checkErr(err)
-						player.Play()
+						_, err = wp.Write(data)
+						if err == waveout.ErrLessChunks {
+							wp.Wait()
+							_, err = wp.Write(data)
+						}
 						checkErr(err)
 					}
 				}
