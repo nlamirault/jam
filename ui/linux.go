@@ -76,6 +76,9 @@ func (app *App) player() {
 			if err != nil {
 				log.Fatalf("Can't play stream: %s", err)
 			}
+			defDur = time.Duration(0)
+			defTrack = &music.BTrack{}
+			app.updateUI()
 
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
