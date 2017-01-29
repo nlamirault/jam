@@ -174,6 +174,7 @@ func (app *App) populateArtists() {
 }
 
 func (app *App) populateSongs() {
+	app.Songs = map[string][]string{}
 	if err := app.DB.View(func(tx *bolt.Tx) error {
 		l := tx.Bucket([]byte("Library"))
 		i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
