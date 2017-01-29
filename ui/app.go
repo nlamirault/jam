@@ -132,6 +132,7 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 			NumTrack:  0,
 			CurArtist: make(chan string),
 			Queue:     make([][]*music.BTrack, 0),
+			State:     make(chan int),
 		},
 	}, nil
 }
@@ -273,9 +274,7 @@ func (app *App) mainLoop() {
 		ev := app.Screen.PollEvent()
 		switch ev := ev.(type) {
 		case *tcell.EventResize:
-			width, height := app.Screen.Size()
-			app.Width = width
-			app.Height = height
+			app.Width, app.Height = app.Screen.Size()
 			app.updateUI()
 		case *tcell.EventKey:
 			switch ev.Key() {
