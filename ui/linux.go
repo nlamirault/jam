@@ -80,7 +80,6 @@ func (app *App) player() {
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
-			artist := <-app.Status.CurArtist
 			timer := time.Now()
 			go func() {
 				for {
@@ -111,8 +110,7 @@ func (app *App) player() {
 
 						defDur = time.Since(timer) + pauseDur
 						defTrack = track
-						defArtist = artist
-						app.printBar(defDur, defTrack, defArtist)
+						app.printBar(defDur, defTrack)
 
 						//buf := new(bytes.Buffer)
 
@@ -157,7 +155,6 @@ func (app *App) player() {
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
-							defArtist = ""
 							app.updateUI()
 
 							timer = time.Now()

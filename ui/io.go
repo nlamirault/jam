@@ -35,7 +35,14 @@ func makeSongLine(track *music.BTrack, width int) string {
 	var res string
 	length := 0
 
-	res = fmt.Sprintf("%2v. %v", track.TrackNumber, track.Title)
+	var i = app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
+	if app.Artists[i-app.numAlb(i)] == "Various Artists" {
+		res = fmt.Sprintf("%2v. %v - %v", track.TrackNumber, track.Artist,
+			track.Title)
+	} else {
+		res = fmt.Sprintf("%2v. %v", track.TrackNumber, track.Title)
+	}
+
 	for _, c := range res {
 		length += runewidth.RuneWidth(c)
 	}

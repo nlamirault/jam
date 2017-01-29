@@ -21,7 +21,6 @@
 package music
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"strconv"
 
@@ -105,11 +104,17 @@ func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
 				}
 				continue
 			} else {
+				if tracks[i].Artist == "" {
+					if tracks[i].AlbumArtist == "" {
+						tracks[i].Artist = "Unknown Artist"
+					} else {
+						tracks[i].Artist = tracks[i].AlbumArtist
+					}
+				}
 				artist, err = lib.CreateBucketIfNotExists([]byte(tracks[i].Artist))
 				if err != nil {
 					return err
 				}
-
 			}
 			if tracks[i].Album == "" {
 				tracks[i].Album = "Unknown Album"
@@ -141,10 +146,4 @@ func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
 		return nil
 	})
 	return err
-}
-
-func itob(v uint64) []byte {
-	b := make([]byte, 2)
-	binary.BigEndian.PutUint16(b, uint16(v))
-	return b
 }

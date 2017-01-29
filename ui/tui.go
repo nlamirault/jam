@@ -33,9 +33,8 @@ import (
 )
 
 var (
-	defDur    = time.Duration(0) // this and below are used for when nothing is playing
-	defTrack  = &music.BTrack{}
-	defArtist = ""
+	defDur   = time.Duration(0) // this and below are used for when nothing is playing
+	defTrack = &music.BTrack{}
 )
 
 func (app *App) updateUI() {
@@ -47,6 +46,7 @@ func (app *App) updateUI() {
 		app.printSongs(app.Status.ScrOffset[true], app.Height+app.Status.ScrOffset[true]-3)
 		for app.Status.CurPos[false] > app.Height-3 {
 			app.Status.CurPos[false]--
+			app.Status.ScrOffset[false]++
 		}
 		for app.Status.CurPos[true] > app.Height-3 {
 			app.Status.CurPos[true] = 2
@@ -56,7 +56,7 @@ func (app *App) updateUI() {
 		app.hlEntry()
 	}
 	app.printStatus()
-	app.printBar(defDur, defTrack, defArtist)
+	app.printBar(defDur, defTrack)
 }
 
 func (app *App) hlEntry() {
@@ -92,9 +92,10 @@ func (app *App) printStatus() {
 	}
 }
 
-func (app *App) printBar(dur time.Duration, track *music.BTrack, artist string) {
+func (app *App) printBar(dur time.Duration, track *music.BTrack) {
 	strdur := ""
-	str := fmt.Sprintf(" %02v:%02v %v - %v ", int(dur.Minutes()), int(dur.Seconds())%60, artist, track.Title)
+	str := fmt.Sprintf(" %02v:%02v %v - %v ", int(dur.Minutes()), int(dur.Seconds())%60,
+		track.Artist, track.Title)
 	lenstr := 0
 	for _, r := range str {
 		lenstr += runewidth.RuneWidth(r)
@@ -137,8 +138,8 @@ func (app *App) printAlbum(y int, alb string) {
 }
 
 func (app *App) printSongs(beg, end int) {
-	// queue = [][]*music.BTrack{}
 	app.Status.Queue = [][]*music.BTrack{}
+	var js *music.BTrack
 	app.populateSongs()
 	i, k := 0, 1
 	if app.Status.NumAlbum[false] == -1 {
@@ -160,7 +161,7 @@ func (app *App) printSongs(beg, end int) {
 			}
 			i++
 			for _, song := range app.Songs[key] {
-				js := new(music.BTrack)
+				js = new(music.BTrack)
 				json.Unmarshal([]byte(song), js)
 				if i >= beg && i < end {
 					printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, makeSongLine(js, app.Width), 0, false, app.Width)

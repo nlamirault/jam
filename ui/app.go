@@ -64,7 +64,6 @@ type Status struct {
 	InTracks  bool
 	InSearch  bool
 	NumTrack  int
-	CurArtist chan string
 	Queue     [][]*music.BTrack // playlist, updated on each movement of cursor in artists view
 	Query     []rune            // search query
 
@@ -127,12 +126,11 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 				false: -1, // same as in scrOffset. -1 is because the artist is unfolded (yet)
 				true:  0,
 			},
-			InTracks:  false,
-			InSearch:  false,
-			NumTrack:  0,
-			CurArtist: make(chan string),
-			Queue:     make([][]*music.BTrack, 0),
-			State:     make(chan int),
+			InTracks: false,
+			InSearch: false,
+			NumTrack: 0,
+			Queue:    make([][]*music.BTrack, 0),
+			State:    make(chan int),
 		},
 	}, nil
 }
@@ -257,10 +255,28 @@ func (app *App) searchQuery() {
 }
 
 func (app *App) randomizeArtists() {
-	var temp = make(sort.StringSlice, len(app.Artists))
-	perm := rand.Perm(len(app.Artists))
-	for i, v := range perm {
-		temp[v] = app.Artists[i]
+	var numAlbums int
+	for i, art := range app.Artists {
+
+		if art == "" {
+			numAlbums++
+			app.ArtistsMap[app.Artists[i-app.numAlb(i)]] = false
+
+		}
+	}
+
+	var temp = make(sort.StringSlice, len(app.Artists)-numAlbums)
+
+	perm := rand.Perm(len(app.Artists) - numAlbums)
+	var index int
+	for _, v := range perm {
+		if app.Artists[v] == "" {
+
+			continue
+		}
+		temp[index] = app.Artists[v]
+		index++
+
 	}
 
 	app.Artists = temp
@@ -296,8 +312,6 @@ func (app *App) mainLoop() {
 				app.downEntry()
 			case tcell.KeyEnter:
 				app.Status.State <- play
-				i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
-				app.Status.CurArtist <- app.Artists[i-app.numAlb(i)]
 			}
 			switch ev.Rune() {
 			case '/':
@@ -318,8 +332,6 @@ func (app *App) mainLoop() {
 				app.populateArtists()
 			case 'x':
 				app.Status.State <- play
-				i := app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
-				app.Status.CurArtist <- app.Artists[i-app.numAlb(i)]
 			case 'v':
 				app.Status.State <- stop
 			case 'c':
