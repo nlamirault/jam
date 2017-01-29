@@ -50,7 +50,10 @@ func CheckCreds(db *bolt.DB) (*gmusic.GMusic, error) {
 			return nil, err
 		}
 	}
-	music.RefreshLibrary(db, gm)
+	err = music.RefreshLibrary(db, gm)
+	if err != nil {
+		return nil, err
+	}
 	err = storage.WriteCredentials(db, gm.Auth, gm.DeviceID)
 	if err != nil {
 		return nil, err

@@ -42,7 +42,7 @@ func tempfile() (string, error) {
 	return f.Name(), nil
 }
 
-func Test_LoginWithEmptyConfiguration(t *testing.T) {
+func getDatabase(t *testing.T) *bolt.DB {
 	tf, err := tempfile()
 	if err != nil {
 		t.Fatalf("Can't create temporary file: %v", err)
@@ -51,12 +51,13 @@ func Test_LoginWithEmptyConfiguration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Can't create BoltDB test database.")
 	}
-	_, err = loginFromDatabase(db)
+	return db
+}
+
+func Test_LoginWithEmptyConfiguration(t *testing.T) {
+	db := getDatabase(t)
+	_, err := loginFromDatabase(db)
 	if err == nil {
 		t.Fatalf("Invalid process for auth: %s", err)
 	}
 }
-
-// func Test_LoginFromDatabaseWithoutCredentials(t *testing.T) {
-
-// }
