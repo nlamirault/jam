@@ -1,7 +1,7 @@
 # jam
 
 This is my first Go program, I wanted to listen to Google Play Music on console,
-so I wrote a player. It is inspired by Matt Jibson's [Moggio](1) and uses one of
+so I wrote a player. It is inspired by Matt Jibson's [Moggio](https://github.com/mjibson/moggio/) and uses one of
 his libraries. You can see it in action if you follow this link:
 https://dl.dropboxusercontent.com/u/3651269/out-2.ogv
 
