@@ -42,7 +42,7 @@ func player(s tcell.Screen) {
 
 	wp, err := waveout.New(2, 44100, 16)
 	checkErr(err)
-	err = wp.AppendChunks(8, 8192)
+	err = wp.AppendChunks(2, 1024*8)
 	checkErr(err)
 
 	//var d mpa.Decoder
@@ -153,10 +153,10 @@ func player(s tcell.Screen) {
 							continue
 						}
 
-						_, err = wp.Write(data)
+						_, err = wp.Write(data[:i])
 						if err == waveout.ErrLessChunks {
 							wp.Wait()
-							_, err = wp.Write(data)
+							_, err = wp.Write(data[:i])
 						}
 						checkErr(err)
 					}
