@@ -36,6 +36,7 @@ import (
 	"github.com/gdamore/tcell"
 	// runewidth "github.com/mattn/go-runewidth"
 
+	"github.com/budkin/jam/lastfm"
 	"github.com/budkin/jam/music"
 )
 
@@ -78,6 +79,7 @@ type App struct {
 	Height int
 
 	GMusic *gmusic.GMusic
+	LastFM *lastfm.Client
 
 	// Better:
 	// Database *Database
@@ -92,7 +94,7 @@ type App struct {
 }
 
 // New creates a new UI
-func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
+func New(gmusic *gmusic.GMusic, lastFM *lastfm.Client, db *bolt.DB) (*App, error) {
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
@@ -107,6 +109,7 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 		Width:      width,
 		Height:     height,
 		GMusic:     gmusic,
+		LastFM:     lastFM,
 		DB:         db,
 		ArtistsMap: map[string]bool{},
 		Artists:    sort.StringSlice{},

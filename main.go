@@ -90,14 +90,14 @@ func main() {
 		log.Fatalf("Can't login into LastFM: %s", err)
 	}
 
-	if err = doUI(gmusic, db); err != nil {
+	if err = doUI(gmusic, lastfmclient, db); err != nil {
 		log.Fatalf("Can't start UI: %s", err)
 	}
 
 }
 
-func doUI(gmusic *gmusic.GMusic, db *bolt.DB) error {
-	app, err := ui.New(gmusic, db)
+func doUI(gmusic *gmusic.GMusic, lastfmClient *lastfm.Client, db *bolt.DB) error {
+	app, err := ui.New(gmusic, lastfmClient, db)
 	if err != nil {
 		return err
 	}
