@@ -21,6 +21,10 @@
 package lastfm
 
 import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/shkh/lastfm-go/lastfm"
@@ -39,24 +43,35 @@ func New(apiKey string, apiSecret string) *Client {
 	}
 }
 
-func (client *Client) Login(username string, password string) error {
-	return client.Api.Login(username, password)
+func (client *Client) Login() error {
+	token, err := client.Api.GetToken()
+	if err != nil {
+		return err
+	}
+	authURL := client.Api.GetAuthTokenUrl(token)
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Authorize the Jam application at ", authURL)
+	text, _ := reader.ReadString('\n')
+	fmt.Println(text)
+	return client.Api.LoginWithToken(token)
 }
 
 func (client *Client) Scrobble(artist string, track string) error {
 	p := lastfm.P{"artist": artist, "track": track}
 	_, err := client.Api.Track.UpdateNowPlaying(p)
 	if err != nil {
+		log.Printf("Error playing: %s", err)
 		return err
 	}
-	// log.Printf("Now-Playing.")
+	log.Printf("Now-Playing.")
 	start := time.Now().Unix()
 	time.Sleep(35 * time.Second)
 	p["timestamp"] = start
 	_, err = client.Api.Track.Scrobble(p)
 	if err != nil {
+		log.Printf("Error scrobble: %s", err)
 		return err
 	}
-	// log.Printf("Scrobbled.")
+	log.Printf("Scrobbled.")
 	return nil
 }

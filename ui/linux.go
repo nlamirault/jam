@@ -72,6 +72,9 @@ func (app *App) player() {
 			copy(queueTemp, app.Status.Queue)
 
 			track := queueTemp[album][ntrack]
+
+			go app.LastFM.Scrobble(track.Artist, track.Title)
+
 			song, err := app.GMusic.GetStream(track.ID)
 			if err != nil {
 				log.Fatalf("Can't play stream: %s", err)
@@ -164,7 +167,6 @@ func (app *App) player() {
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
 							app.updateUI()
-
 							timer = time.Now()
 							continue
 						}

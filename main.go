@@ -47,8 +47,6 @@ var (
 
 	lastFMAPIKey    string
 	lastFMSecretKey string
-	lastFMUsername  string
-	lastFMPassword  string
 )
 
 func init() {
@@ -58,8 +56,6 @@ func init() {
 
 	flag.StringVar(&lastFMAPIKey, "lastfm-api-key", "", "LastFM API key")
 	flag.StringVar(&lastFMSecretKey, "lastfm-secret-key", "", "LastFM secret key")
-	flag.StringVar(&lastFMUsername, "lastfm-username", "", "LastFM username")
-	flag.StringVar(&lastFMPassword, "lastfm-password", "", "LastFM password")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.Version))
@@ -86,7 +82,7 @@ func main() {
 	defer db.Close()
 
 	lastfmclient := lastfm.New(lastFMAPIKey, lastFMSecretKey)
-	if err := lastfmclient.Login(lastFMUsername, lastFMPassword); err != nil {
+	if err := lastfmclient.Login(); err != nil {
 		log.Fatalf("Can't login into LastFM: %s", err)
 	}
 
