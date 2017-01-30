@@ -57,8 +57,7 @@ system
 
 If you have an x86 system, you'll have to compile it yourself, sorry
 
-Contributions are welcome! Though the codebase is a mess, since it is my first
-Go program. Code reviews are welcome too!
+Contributions are welcome!
 
 The keybindins are mostly the same as in Cmus:
 
