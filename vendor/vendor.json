@@ -63,6 +63,12 @@
 			"revisionTime": "2015-06-21T20:05:43Z"
 		},
 		{
+			"checksumSHA1": "mdbr8w1hXmb/M1ZIFguynJQ5oyM=",
+			"path": "github.com/shkh/lastfm-go/lastfm",
+			"revision": "e22d42a46e6c7e49ee64b26411b09e1acca40bf4",
+			"revisionTime": "2015-12-08T09:49:07Z"
+		},
+		{
 			"checksumSHA1": "xiderUuvye8Kpn7yX3niiJg32bE=",
 			"path": "golang.org/x/crypto/ssh/terminal",
 			"revision": "41d678d1df78cd0410143162dff954e6dc09300f",
