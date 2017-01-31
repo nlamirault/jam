@@ -63,7 +63,7 @@ func (client *Client) Scrobble(artist string, track string) error {
 		log.Printf("Error playing: %s", err)
 		return err
 	}
-	log.Printf("Now-Playing.")
+	log.Printf("LastFM playing: %s", track)
 	start := time.Now().Unix()
 	time.Sleep(35 * time.Second)
 	p["timestamp"] = start

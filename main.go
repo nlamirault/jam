@@ -81,9 +81,12 @@ func main() {
 	}
 	defer db.Close()
 
-	lastfmclient := lastfm.New(lastFMAPIKey, lastFMSecretKey)
-	if err := lastfmclient.Login(); err != nil {
-		log.Fatalf("Can't login into LastFM: %s", err)
+	var lastfmclient *lastfm.Client
+	if len(lastFMAPIKey) > 0 && len(lastFMSecretKey) > 0 {
+		lastfmclient = lastfm.New(lastFMAPIKey, lastFMSecretKey)
+		if err := lastfmclient.Login(); err != nil {
+			log.Fatalf("Can't login into LastFM: %s", err)
+		}
 	}
 
 	if err = doUI(gmusic, lastfmclient, db); err != nil {
