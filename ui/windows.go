@@ -41,15 +41,11 @@ func (app *App) player() {
 	prev := false
 	pauseDur := time.Duration(0)
 
-	stream, err := waveout.New(2, 44100, 16)
+	stream, err := waveout.NewWithBuffers(2, 44100, 16, 8, 4096)
 	if err != nil {
 		log.Fatalf("failed to create waveout: %s", err)
 	}
 	defer stream.Close()
-	err = stream.AppendChunks(8, 4096)
-	if err != nil {
-		log.Fatalf("failed to setup waveout: %s", err)
-	}
 
 	//var d mpa.Decoder
 	var r *mpa.Reader
