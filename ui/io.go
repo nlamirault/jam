@@ -33,6 +33,7 @@ import (
 
 func (app *App) makeSongLine(track *music.BTrack) string {
 	var res string
+	var run []rune
 	length := 0
 
 	var i = app.Status.CurPos[false] - 1 + app.Status.ScrOffset[false]
@@ -52,12 +53,16 @@ func (app *App) makeSongLine(track *music.BTrack) string {
 		length++
 	}
 
+	run = []rune(res)
 	for length > app.Width-app.Width/3+2-16 {
-		run := []rune(res)
+
+		if len(run) == 0 {
+			break
+		}
 		length -= runewidth.RuneWidth(run[len(run)-1])
 		run = run[:len(run)-1]
-		res = string(run)
 	}
+	res = string(run)
 
 	du, _ := strconv.Atoi(track.DurationMillis)
 	dur := time.Duration(time.Millisecond * time.Duration(du))
