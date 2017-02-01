@@ -76,9 +76,6 @@ func (app *App) player() {
 			if err != nil {
 				log.Fatalf("Can't play stream: %s", err)
 			}
-			defDur = time.Duration(0)
-			defTrack = &music.BTrack{}
-			app.updateUI()
 
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
@@ -104,7 +101,6 @@ func (app *App) player() {
 							}
 						}
 					case <-stop:
-						playing = false
 						pauseDur = time.Duration(0)
 						return
 					default:
@@ -112,7 +108,7 @@ func (app *App) player() {
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
-							app.updateUI()
+							app.printBar(defDur, defTrack)
 						}()
 						playing = true
 
@@ -163,7 +159,7 @@ func (app *App) player() {
 							pauseDur = time.Duration(0)
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
-							app.updateUI()
+							app.printBar(defDur, defTrack)
 
 							timer = time.Now()
 							continue

@@ -107,6 +107,9 @@ func (app *App) printBar(dur time.Duration, track *music.BTrack) {
 	for i := 0.0; i < float64(leng)/dura.Seconds()*dur.Seconds(); i += 1.0 {
 		strdur += "—"
 	}
+	for len(strdur) < leng {
+		strdur += " "
+	}
 	print(app.Screen, lenstr, app.Height-2, barStyle, strdur)
 	app.Screen.Show()
 }
