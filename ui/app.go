@@ -232,6 +232,7 @@ func (app *App) search() {
 }
 
 func (app *App) searchQuery() {
+	app.Status.NumAlbum[false] = -1
 	var i int
 	if !app.Status.InSearch {
 		i = app.Status.ScrOffset[false] + app.Status.CurPos[false]
