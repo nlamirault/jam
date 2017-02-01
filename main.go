@@ -30,7 +30,6 @@ import (
 	"github.com/budkin/gmusic"
 
 	"github.com/budkin/jam/auth"
-	"github.com/budkin/jam/lastfm"
 	"github.com/budkin/jam/storage"
 	"github.com/budkin/jam/ui"
 	"github.com/budkin/jam/version"
@@ -44,18 +43,12 @@ const (
 var (
 	vers  bool
 	debug bool
-
-	lastFMAPIKey    string
-	lastFMSecretKey string
 )
 
 func init() {
 	// parse flags
 	flag.BoolVar(&vers, "version", false, "print version and exit")
 	flag.BoolVar(&debug, "debug", false, "debug")
-
-	flag.StringVar(&lastFMAPIKey, "lastfm-api-key", "", "LastFM API key")
-	flag.StringVar(&lastFMSecretKey, "lastfm-secret-key", "", "LastFM secret key")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.Version))
@@ -81,22 +74,14 @@ func main() {
 	}
 	defer db.Close()
 
-	var lastfmclient *lastfm.Client
-	if len(lastFMAPIKey) > 0 && len(lastFMSecretKey) > 0 {
-		lastfmclient = lastfm.New(lastFMAPIKey, lastFMSecretKey)
-		if err := lastfmclient.Login(); err != nil {
-			log.Fatalf("Can't login into LastFM: %s", err)
-		}
-	}
-
-	if err = doUI(gmusic, lastfmclient, db); err != nil {
+	if err = doUI(gmusic, db); err != nil {
 		log.Fatalf("Can't start UI: %s", err)
 	}
 
 }
 
-func doUI(gmusic *gmusic.GMusic, lastfmClient *lastfm.Client, db *bolt.DB) error {
-	app, err := ui.New(gmusic, lastfmClient, db)
+func doUI(gmusic *gmusic.GMusic, db *bolt.DB) error {
+	app, err := ui.New(gmusic, db)
 	if err != nil {
 		return err
 	}
