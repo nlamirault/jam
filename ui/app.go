@@ -269,7 +269,7 @@ func (app *App) randomizeArtists() {
 
 	var temp = make(sort.StringSlice, len(app.Artists)-numAlbums)
 
-	perm := rand.Perm(len(app.Artists) - numAlbums)
+	perm := rand.Perm(len(app.Artists))
 	var index int
 	for _, v := range perm {
 		if app.Artists[v] == "" {
