@@ -186,7 +186,7 @@ func (app *App) printSongs(beg, end int) {
 		for _, song := range app.Songs[app.Albums[app.Artists[j-app.numAlb(j)]][app.Status.NumAlbum[false]]] {
 			js := new(music.BTrack)
 			json.Unmarshal([]byte(song), js)
-			if i >= beg {
+			if i >= beg && i < end {
 				printSingleItem(app.Screen, app.Width/3+2, k, dfStyle, app.makeSongLine(js), 0, false, app.Width)
 				que = append(que, js)
 				k++
