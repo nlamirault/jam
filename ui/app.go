@@ -144,6 +144,7 @@ func (app *App) Run() {
 }
 
 func (app *App) populateArtists() {
+	app.Artists = sort.StringSlice{}
 	app.DB.View(func(tx *bolt.Tx) error {
 		// Assume bucket exists and has keys
 		b := tx.Bucket([]byte("Library"))
