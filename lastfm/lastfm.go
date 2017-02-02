@@ -50,7 +50,7 @@ func (client *Client) GetToken() (string, error) {
 	authURL := client.Api.GetAuthTokenUrl(token)
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("If you use Last.fm click the link below, grant permission to Jam, and press enter; if not, just press enter:\n", authURL)
-	_, _ := reader.ReadString('\n')
+	_, _ = reader.ReadString('\n')
 	return token, nil
 }
 
