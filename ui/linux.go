@@ -25,6 +25,7 @@ package ui
 import (
 	"io"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/korandiz/mpa"
@@ -41,7 +42,10 @@ func (app *App) player() {
 	paused := false
 	next := false
 	prev := false
+	trackScrobbled := false
 	pauseDur := time.Duration(0)
+	var pauseTimer time.Time
+	var songDur time.Duration
 
 	ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, 44100, 2}
 	stream, err := pulse.Playback("jam", "jam", &ss)
@@ -73,25 +77,29 @@ func (app *App) player() {
 
 			track := queueTemp[album][ntrack]
 
-			go app.LastFM.Scrobble(track.Artist, track.Title)
-
 			song, err := app.GMusic.GetStream(track.ID)
 			if err != nil {
 				log.Fatalf("Can't play stream: %s", err)
 			}
+
 			defDur = time.Duration(0)
 			defTrack = &music.BTrack{}
 			app.updateUI()
+			temp, _ := strconv.Atoi(track.DurationMillis)
+			songDur = time.Duration(temp) * time.Millisecond
 
 			//d = mpa.Decoder{Input: song.Body}
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
 			timer := time.Now()
+			if app.Status.LastFM {
+				app.LastFM.NowPlaying(track.Title, track.Artist)
+			}
 			go func() {
 				for {
 					select {
 					case <-pause:
-						pauseDur = defDur
+						pauseTimer = time.Now()
 						paused = true
 					loop:
 						for {
@@ -101,17 +109,17 @@ func (app *App) player() {
 								paused = false
 								return
 							case <-pause:
-								timer = time.Now()
+								pauseDur = time.Since(pauseTimer)
 								paused = false
 								break loop
 							}
 						}
 					case <-stop:
-						playing = false
 						pauseDur = time.Duration(0)
 						return
 					default:
 						defer func() {
+							trackScrobbled = false
 							playing = false
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
@@ -119,11 +127,18 @@ func (app *App) player() {
 						}()
 						playing = true
 
-						defDur = time.Since(timer) + pauseDur
+						defDur = time.Since(timer) - pauseDur
 						defTrack = track
 						app.printBar(defDur, defTrack)
 
 						//buf := new(bytes.Buffer)
+						if app.Status.LastFM && (defDur > songDur/2 ||
+							defDur > 4*time.Minute) && !trackScrobbled &&
+							songDur > 30*time.Second {
+							trackScrobbled = true
+							app.LastFM.Scrobble(track.Artist, track.Title,
+								timer.Unix())
+						}
 
 						i, err := r.Read(data)
 						if err == io.EOF || i == 0 || next || prev {
@@ -167,7 +182,10 @@ func (app *App) player() {
 							defDur = time.Duration(0)
 							defTrack = &music.BTrack{}
 							app.updateUI()
+							temp, _ := strconv.Atoi(track.DurationMillis)
+							songDur = time.Duration(temp) * time.Millisecond
 							timer = time.Now()
+							trackScrobbled = false
 							continue
 						}
 

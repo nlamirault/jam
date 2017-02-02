@@ -46,7 +46,7 @@ func ReadCredentials(db *bolt.DB) ([]byte, []byte, error) {
 	err := db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("#AuthDetails"))
 		if b == nil {
-			return errors.New("No bucket into database")
+			return errors.New("No #AuthDetails bucket")
 		}
 		auth = b.Get([]byte("Auth"))
 		deviceID = b.Get([]byte("DeviceID"))
@@ -66,6 +66,39 @@ func WriteCredentials(db *bolt.DB, auth string, deviceID string) error {
 		}
 		err = b.Put([]byte("Auth"), []byte(auth))
 		err = b.Put([]byte("DeviceID"), []byte(deviceID))
+		return err
+	})
+}
+
+func ReadLastFM(db *bolt.DB) (string, error) {
+	var lastfm []byte
+	var err error
+
+	err = db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("#LastFM"))
+		if b == nil {
+			return errors.New("No #LastFM bucket")
+		}
+		lastfm = b.Get([]byte("sk"))
+		if string(lastfm) == "" {
+			err = errors.New("No LastFM record in the database")
+		}
+
+		return err
+
+	})
+	return string(lastfm), err
+}
+
+func WriteLastFM(lastfm []byte, db *bolt.DB) error {
+
+	return db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte("#LastFM"))
+		if err != nil {
+			return err
+		}
+
+		err = b.Put([]byte("sk"), lastfm)
 		return err
 	})
 }

@@ -30,6 +30,7 @@ import (
 	"github.com/budkin/gmusic"
 
 	"github.com/budkin/jam/auth"
+	"github.com/budkin/jam/lastfm"
 	"github.com/budkin/jam/storage"
 	"github.com/budkin/jam/ui"
 	"github.com/budkin/jam/version"
@@ -68,20 +69,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Can't open database: %s", err)
 	}
-	gmusic, err := auth.CheckCreds(db)
+	gmusic, lmclient, lastfm, err := auth.CheckCreds(db)
 	if err != nil {
 		log.Fatalf("Can't connect to Google Music: %s", err)
 	}
 	defer db.Close()
 
-	if err = doUI(gmusic, db); err != nil {
+	if err = doUI(gmusic, lmclient, lastfm, db); err != nil {
 		log.Fatalf("Can't start UI: %s", err)
 	}
 
 }
 
-func doUI(gmusic *gmusic.GMusic, db *bolt.DB) error {
-	app, err := ui.New(gmusic, db)
+func doUI(gmusic *gmusic.GMusic, lmclient *lastfm.Client, lastfm string, db *bolt.DB) error {
+	app, err := ui.New(gmusic, lmclient, lastfm, db)
 	if err != nil {
 		return err
 	}
