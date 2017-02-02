@@ -36,6 +36,7 @@ import (
 	"github.com/gdamore/tcell"
 	// runewidth "github.com/mattn/go-runewidth"
 
+	"github.com/budkin/jam/lastfm"
 	"github.com/budkin/jam/music"
 )
 
@@ -63,6 +64,7 @@ type Status struct {
 	NumAlbum  map[bool]int
 	InTracks  bool
 	InSearch  bool
+	LastFM    bool
 	NumTrack  int
 	Queue     [][]*music.BTrack // playlist, updated on each movement of cursor in artists view
 	Query     []rune            // search query
@@ -78,6 +80,7 @@ type App struct {
 	Height int
 
 	GMusic *gmusic.GMusic
+	LastFM *lastfm.Client
 
 	// Better:
 	// Database *Database
@@ -92,7 +95,8 @@ type App struct {
 }
 
 // New creates a new UI
-func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
+func New(gmusic *gmusic.GMusic, lmclient *lastfm.Client, lastfm string, db *bolt.DB) (*App, error) {
+	var lastfmStatus bool
 	screen, err := tcell.NewScreen()
 	if err != nil {
 		return nil, err
@@ -102,11 +106,17 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 		return nil, err
 	}
 	width, height := screen.Size()
+	if lastfm != "None" {
+		lastfmStatus = true
+	} else {
+		lmclient = nil
+	}
 	return &App{
 		Screen:     screen,
 		Width:      width,
 		Height:     height,
 		GMusic:     gmusic,
+		LastFM:     lmclient,
 		DB:         db,
 		ArtistsMap: map[string]bool{},
 		Artists:    sort.StringSlice{},
@@ -131,6 +141,7 @@ func New(gmusic *gmusic.GMusic, db *bolt.DB) (*App, error) {
 			NumTrack: 0,
 			Queue:    make([][]*music.BTrack, 0),
 			State:    make(chan int),
+			LastFM:   lastfmStatus,
 		},
 	}, nil
 }

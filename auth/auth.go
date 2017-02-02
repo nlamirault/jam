@@ -27,6 +27,7 @@ import (
 	"github.com/budkin/gmusic"
 	"github.com/howeyc/gopass"
 
+	"github.com/budkin/jam/lastfm"
 	"github.com/budkin/jam/music"
 	"github.com/budkin/jam/storage"
 )
@@ -42,23 +43,53 @@ func loginFromDatabase(db *bolt.DB) (*gmusic.GMusic, error) {
 	}, nil
 }
 
-func CheckCreds(db *bolt.DB) (*gmusic.GMusic, error) {
+func CheckCreds(db *bolt.DB) (*gmusic.GMusic, *lastfm.Client, string, error) {
 	gm, err := loginFromDatabase(db)
 	if err != nil {
 		gm, err = authenticate()
 		if err != nil {
-			return nil, err
+			return nil, nil, "", err
 		}
 		err = storage.WriteCredentials(db, gm.Auth, gm.DeviceID)
 		if err != nil {
-			return nil, err
+			return nil, nil, "", err
 		}
+		fmt.Println("Syncing database is in order, may take a few seconds")
 		err = music.RefreshLibrary(db, gm)
 	}
 	if err != nil {
-		return nil, err
+		return nil, nil, "", err
 	}
-	return gm, nil
+
+	lmclient := lastfm.New(
+		string([]byte{0x62, 0x39, 0x30, 0x36, 0x65, 0x62, 0x63, 0x35, 0x39, 0x35, 0x34, 0x63, 0x37, 0x65, 0x63, 0x39, 0x66, 0x39, 0x65, 0x63, 0x64, 0x32, 0x66, 0x66, 0x35, 0x63, 0x30, 0x62, 0x65, 0x33, 0x64, 0x34}),
+		string([]byte{0x39, 0x36, 0x66, 0x63, 0x63, 0x33, 0x33, 0x33, 0x33, 0x61, 0x39, 0x61, 0x30, 0x33, 0x37, 0x66, 0x63, 0x65, 0x35, 0x31, 0x65, 0x63, 0x33, 0x62, 0x37, 0x62, 0x34, 0x37, 0x66, 0x66, 0x62, 0x37}))
+
+	sk, err := storage.ReadLastFM(db)
+	if err != nil {
+
+		token, err := lmclient.GetToken()
+		if err != nil {
+			return nil, nil, "", err
+		}
+
+		if err := lmclient.LoginWithToken(token); err != nil {
+			sk = "None"
+		} else {
+			sk = lmclient.Api.GetSessionKey()
+		}
+
+		err = storage.WriteLastFM([]byte(sk), db)
+		if err != nil {
+			return nil, nil, "", err
+		}
+	}
+
+	if sk != "None" {
+		lmclient.Api.SetSession(sk)
+	}
+
+	return gm, lmclient, sk, nil
 }
 
 func authenticate() (*gmusic.GMusic, error) {
