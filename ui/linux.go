@@ -109,7 +109,7 @@ func (app *App) player() {
 								paused = false
 								return
 							case <-pause:
-								pauseDur = time.Since(pauseTimer)
+								pauseDur = pauseDur + time.Since(pauseTimer)
 								paused = false
 								break loop
 							}
