@@ -268,6 +268,10 @@ func (app *App) searchQuery() {
 }
 
 func (app *App) randomizeArtists() {
+	app.Status.NumTrack = 0
+	app.Status.NumAlbum[true] = 0
+	app.Status.ScrOffset[true] = 0
+	app.Status.CurPos[true] = 2
 	var numAlbums int
 	for i, art := range app.Artists {
 
