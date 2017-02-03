@@ -93,7 +93,7 @@ func (app *App) player() {
 			defer song.Body.Close()
 			timer := time.Now()
 			if app.Status.LastFM {
-				app.LastFM.NowPlaying(track.Title, track.Artist)
+				go app.LastFM.NowPlaying(track.Title, track.Artist)
 			}
 			go func() {
 				for {
@@ -195,7 +195,7 @@ func (app *App) player() {
 							timer = time.Now()
 							trackScrobbled = false
 							if app.Status.LastFM {
-								app.LastFM.NowPlaying(track.Title, track.Artist)
+								go app.LastFM.NowPlaying(track.Title, track.Artist)
 							}
 							continue
 						}
