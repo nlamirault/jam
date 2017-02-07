@@ -1,5 +1,6 @@
 // Package gmusic provides methods to list and play music from Google
 // Play Music.
+
 package gmusic
 
 import (
@@ -143,10 +144,10 @@ type SettingsData struct {
 
 type Settings struct {
 	EntitlementInfo struct {
-		ExpirationMillis int  `json:"expirationMillis"`
-		IsCanceled       bool `json:"isCanceled"`
-		IsSubscription   bool `json:"isSubscription"`
-		IsTrial          bool `json:"isTrial"`
+		ExpirationMillis uint64 `json:"expirationMillis"`
+		IsCanceled       bool   `json:"isCanceled"`
+		IsSubscription   bool   `json:"isSubscription"`
+		IsTrial          bool   `json:"isTrial"`
 	} `json:"entitlementInfo"`
 	Lab []struct {
 		Description    string `json:"description"`
@@ -154,14 +155,14 @@ type Settings struct {
 		Enabled        bool   `json:"enabled"`
 		ExperimentName string `json:"experimentName"`
 	} `json:"lab"`
-	MaxUploadedTracks      int  `json:"maxUploadedTracks"`
-	SubscriptionNewsletter bool `json:"subscriptionNewsletter"`
+	MaxUploadedTracks      uint32 `json:"maxUploadedTracks"`
+	SubscriptionNewsletter bool   `json:"subscriptionNewsletter"`
 	UploadDevice           []struct {
-		DeviceType             int    `json:"deviceType"`
+		DeviceType             uint32 `json:"deviceType"`
 		ID                     string `json:"id"`
 		LastAccessedFormatted  string `json:"lastAccessedFormatted"`
-		LastAccessedTimeMillis int    `json:"lastAccessedTimeMillis"`
-		LastEventTimeMillis    int    `json:"lastEventTimeMillis"`
+		LastAccessedTimeMillis uint64 `json:"lastAccessedTimeMillis"`
+		LastEventTimeMillis    uint64 `json:"lastEventTimeMillis"`
 		Name                   string `json:"name"`
 	} `json:"uploadDevice"`
 }
@@ -177,6 +178,20 @@ func (g *GMusic) ListPlaylists() ([]*Playlist, error) {
 		return nil, err
 	}
 	return data.Data.Items, nil
+}
+
+func (g *GMusic) GetTrackInfo(trackID string) (*Track, error) {
+	r, err := g.sjRequest("GET", "fetchtrack?alt=json&nid="+trackID, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Body.Close()
+	var data Track
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		return nil, err
+	}
+	return &data, nil
 }
 
 type ListPlaylists struct {
@@ -297,7 +312,7 @@ type Track struct {
 	Title                 string   `json:"title"`
 	TrackNumber           uint32   `json:"trackNumber"`
 	TrackType             string   `json:"trackType"`
-	Year                  int      `json:"year"`
+	Year                  uint32   `json:"year"`
 }
 
 // GetStream returns a http.Response with a Body streamed as an MP3.
