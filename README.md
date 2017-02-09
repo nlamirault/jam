@@ -22,7 +22,7 @@ If you use 2-factor authorisation with your Google account, you will have to
 generate an app password, follow this link 
 https://security.google.com/settings/security/apppasswords
 
-The linux binary I release is not static, it depends on pulseadio, if you want
+The linux binary I release is not static, it depends on pulseaudio, if you want
 to build it from source, you are going to need the pulseaudio development package
 installed.
 Windows users are all set
