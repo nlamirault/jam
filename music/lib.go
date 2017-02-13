@@ -37,7 +37,7 @@ type BTrack struct {
 	ID             string
 	PlayCount      uint32
 	Title          string
-	Year           int
+	Year           uint32
 }
 
 func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
