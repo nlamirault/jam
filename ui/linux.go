@@ -92,7 +92,7 @@ func (app *App) player() {
 			r = &mpa.Reader{Decoder: &mpa.Decoder{Input: song.Body}}
 			defer song.Body.Close()
 			timer := time.Now()
-			if app.Status.LastFM {
+			if app.Status.LastFM && app.LastFM != nil {
 				go app.LastFM.NowPlaying(track.Title, track.Artist)
 			}
 			go func() {
@@ -123,8 +123,9 @@ func (app *App) player() {
 								defDur > 4*time.Minute) && !trackScrobbled &&
 								songDur > 30*time.Second {
 								trackScrobbled = true
-								go app.LastFM.Scrobble(track.Artist, track.Title,
-									timer.Unix())
+								if app.LastFM != nil {
+									go app.LastFM.Scrobble(track.Artist, track.Title, timer.Unix())
+								}
 							}
 							trackScrobbled = false
 							playing = false
@@ -150,8 +151,9 @@ func (app *App) player() {
 								defDur > 4*time.Minute) && !trackScrobbled &&
 								songDur > 30*time.Second {
 								trackScrobbled = true
-								go app.LastFM.Scrobble(track.Artist, track.Title,
-									timer.Unix())
+								if app.LastFM != nil {
+									go app.LastFM.Scrobble(track.Artist, track.Title, timer.Unix())
+								}
 							}
 							switch err.(type) {
 							case mpa.MalformedStream:
@@ -194,7 +196,7 @@ func (app *App) player() {
 							songDur = time.Duration(temp) * time.Millisecond
 							timer = time.Now()
 							trackScrobbled = false
-							if app.Status.LastFM {
+							if app.Status.LastFM && app.LastFM != nil {
 								go app.LastFM.NowPlaying(track.Title, track.Artist)
 							}
 							continue
