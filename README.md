@@ -17,6 +17,9 @@ The features it has are:
 - this player no longer lists artists in random order - if you want to randomize
   them press R
 
+In order to use this program you should be logged in in Google Play services on
+your phone, if you have no smartphone than this program, at its current state,
+is not for you
 
 If you use 2-factor authorisation with your Google account, you will have to
 generate an app password, follow this link 
