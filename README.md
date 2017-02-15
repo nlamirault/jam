@@ -7,7 +7,7 @@ https://dl.dropboxusercontent.com/u/3651269/out-2.ogv
 
 The features it has are:
 
-- Last.fm scrobbling
+- Last.fm scrobbling (use -lastfm flag)
 - populating a local database with the artists and albums you saved through the
   web interface (or by any other means)
 - searching within artists in the database
