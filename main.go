@@ -71,7 +71,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Can't open database: %s", err)
 	}
-	gmusic, lmclient, lastfm, err := auth.CheckCreds(db, lastFM)
+	gmusic, lmclient, lastfm, err := auth.CheckCreds(db, &lastFM)
 	if err != nil {
 		log.Fatalf("Can't connect to Google Music: %s", err)
 	}

@@ -43,7 +43,7 @@ func loginFromDatabase(db *bolt.DB) (*gmusic.GMusic, error) {
 	}, nil
 }
 
-func CheckCreds(db *bolt.DB, lastFM bool) (*gmusic.GMusic, *lastfm.Client, string, error) {
+func CheckCreds(db *bolt.DB, lastFM *bool) (*gmusic.GMusic, *lastfm.Client, string, error) {
 	gm, err := loginFromDatabase(db)
 	if err != nil {
 		gm, err = authenticate()
@@ -60,27 +60,21 @@ func CheckCreds(db *bolt.DB, lastFM bool) (*gmusic.GMusic, *lastfm.Client, strin
 	if err != nil {
 		return nil, nil, "", err
 	}
-	if !lastFM {
-		return gm, nil, "", nil
-	}
 
 	lmclient := lastfm.New(
 		string([]byte{0x62, 0x39, 0x30, 0x36, 0x65, 0x62, 0x63, 0x35, 0x39, 0x35, 0x34, 0x63, 0x37, 0x65, 0x63, 0x39, 0x66, 0x39, 0x65, 0x63, 0x64, 0x32, 0x66, 0x66, 0x35, 0x63, 0x30, 0x62, 0x65, 0x33, 0x64, 0x34}),
 		string([]byte{0x39, 0x36, 0x66, 0x63, 0x63, 0x33, 0x33, 0x33, 0x33, 0x61, 0x39, 0x61, 0x30, 0x33, 0x37, 0x66, 0x63, 0x65, 0x35, 0x31, 0x65, 0x63, 0x33, 0x62, 0x37, 0x62, 0x34, 0x37, 0x66, 0x66, 0x62, 0x37}))
 
 	sk, err := storage.ReadLastFM(db)
-	if err != nil {
+	if *lastFM && err != nil {
 
 		token, err := lmclient.GetToken()
 		if err != nil {
 			return nil, nil, "", err
 		}
 
-		if err := lmclient.LoginWithToken(token); err != nil {
-			sk = "None"
-		} else {
-			sk = lmclient.Api.GetSessionKey()
-		}
+		lmclient.LoginWithToken(token)
+		sk = lmclient.Api.GetSessionKey()
 
 		err = storage.WriteLastFM([]byte(sk), db)
 		if err != nil {
@@ -88,11 +82,14 @@ func CheckCreds(db *bolt.DB, lastFM bool) (*gmusic.GMusic, *lastfm.Client, strin
 		}
 	}
 
-	if sk != "None" {
+	if sk != "" {
 		lmclient.Api.SetSession(sk)
+		*lastFM = true
+		return gm, lmclient, sk, nil
+
 	}
 
-	return gm, lmclient, sk, nil
+	return gm, nil, "", nil
 }
 
 func authenticate() (*gmusic.GMusic, error) {
