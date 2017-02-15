@@ -4,6 +4,7 @@ machine:
     - sudo rm -rf /usr/local/go
     - sudo tar -C /usr/local -xzf go.tar.gz
     - sudo chmod a+w /usr/local/go/src/
+    - sudo apt-get install libpulse-dev
   services:
     - docker
 
