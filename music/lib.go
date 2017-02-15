@@ -23,6 +23,7 @@ package music
 import (
 	"encoding/json"
 	"strconv"
+	"strings"
 
 	"github.com/boltdb/bolt"
 	"github.com/budkin/gmusic"
@@ -111,6 +112,7 @@ func RefreshLibrary(db *bolt.DB, gm *gmusic.GMusic) error {
 						tracks[i].Artist = tracks[i].AlbumArtist
 					}
 				}
+				tracks[i].Artist = strings.Title(tracks[i].Artist)
 				artist, err = lib.CreateBucketIfNotExists([]byte(tracks[i].Artist))
 				if err != nil {
 					return err
