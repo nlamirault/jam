@@ -18,8 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// +build linux
-
 package ui
 
 import (
@@ -30,10 +28,15 @@ import (
 
 	"github.com/korandiz/mpa"
 
-	pulse "github.com/mesilliac/pulse-simple"
-
 	"github.com/budkin/jam/music"
 )
+
+// OutputStream define an output stream
+type OutputStream interface {
+	CloseStream() error
+
+	Write(data []byte) (int, error)
+}
 
 func (app *App) player() {
 	stop := make(chan bool)
@@ -47,13 +50,11 @@ func (app *App) player() {
 	var pauseTimer time.Time
 	var songDur time.Duration
 
-	ss := pulse.SampleSpec{pulse.SAMPLE_S16LE, 44100, 2}
-	stream, err := pulse.Playback("jam", "jam", &ss)
+	stream, err := makeOutputStream()
 	if err != nil {
 		log.Fatalf("Can't playback from Pulse: %s", err)
 	}
-	defer stream.Free()
-	defer stream.Drain()
+	defer stream.CloseStream()
 
 	//var d mpa.Decoder
 	var r *mpa.Reader
