@@ -24,10 +24,9 @@ WARN_COLOR=\033[33;01m
 MAKE_COLOR=\033[33;01m%-20s\033[0m
 
 MAIN = github.com/budkin/jam
+SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
+PKGS = $(shell go list ./... | grep -v /vendor/)
 EXE = $(shell ls jam-*_*)
-
-PACKAGE=$(APP)-$(VERSION)
-ARCHIVE=$(PACKAGE).tar
 
 .DEFAULT_GOAL := help
 
