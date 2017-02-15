@@ -43,9 +43,9 @@ func makeOutputStream() (OutputStream, error) {
 }
 
 func (wos *windowsOutputStream) CloseStream() error {
-	return wos.player.Close()
+	return wos.Player.Close()
 }
 
 func (wos *windowsOutputStream) Write(data []byte) (int, error) {
-	return wos.Stream.Write(data)
+	return wos.Player.Write(data)
 }
