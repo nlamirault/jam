@@ -8,9 +8,9 @@ machine:
   services:
     - docker
 
-dependencies:
-  post:
-    - make init
+# dependencies:
+#   post:
+#     - make init
 
 test:
   pre:

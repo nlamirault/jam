@@ -13,8 +13,8 @@ DIR = $(shell pwd)
 GO = go
 
 # GOX = gox -os="linux darwin windows freebsd openbsd netbsd"
-GOX = gox -os="linux"
-GOX_ARGS = "-output={{.Dir}}-$(VERSION)_{{.OS}}_{{.Arch}}"
+# GOX = gox -os="linux"
+# GOX_ARGS = "-output={{.Dir}}-$(VERSION)_{{.OS}}_{{.Arch}}"
 
 NO_COLOR=\033[0m
 OK_COLOR=\033[32;01m
@@ -44,7 +44,6 @@ init: ## Install requirements
 	@echo -e "$(OK_COLOR)[$(APP)] Install requirements$(NO_COLOR)"
 	@go get -u github.com/golang/glog
 	@go get -u github.com/kardianos/govendor
-	@go get -u github.com/Masterminds/rmvcsdir
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
 	@go get -u github.com/mitchellh/gox
@@ -81,6 +80,8 @@ errcheck: ## Launch go errcheck
 coverage: ## Launch code coverage
 	@$(foreach pkg,$(PKGS),$(GO) test -cover $(pkg) $(glide novendor) || exit;)
 
-gox: ## Make all binaries
+binaries: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
-	$(GOX) $(GOX_ARGS) github.com/budkin/jam
+	# $(GOX) $(GOX_ARGS) github.com/budkin/jam
+	GOOS=linux GOARCH=amd64 go build -o jam_x64
+	GOOS=windows GOARCH=386 go build -o jam_x86.exe

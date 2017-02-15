@@ -1,8 +1,6 @@
 # jam
 
-[![License MIT][badge-license]](LICENSE)
-
-Master : [![Circle CI](https://circleci.com/gh/nlamirault/jam/tree/ci.svg?style=svg)](https://circleci.com/gh/nlamirault/jam/tree/ci)
+* Master : [![Circle CI](https://circleci.com/gh/nlamirault/jam/tree/ci.svg?style=svg)](https://circleci.com/gh/nlamirault/jam/tree/ci)
 
 This is my first Go program, I wanted to listen to Google Play Music on console,
 so I wrote a player. It is inspired by Matt Jibson's [Moggio](https://github.com/mjibson/moggio/) and uses one of
@@ -87,7 +85,3 @@ The keybindins are mostly the same as in Cmus:
 ## License
 
 See [LICENSE](LICENSE) for the complete license.
-
-
-
-[badge-license]: https://img.shields.io/badge/license-MIT-green.svg?style=flat
