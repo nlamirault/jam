@@ -39,6 +39,12 @@
 			"revisionTime": "2015-11-22T13:40:43Z"
 		},
 		{
+			"checksumSHA1": "0fz0D2z8aRTJUpnqX0jM0TENzMw=",
+			"path": "github.com/koron/go-waveout",
+			"revision": "800614c8e3fb3c2ce4015f1a528cc8b1c77982e5",
+			"revisionTime": "2017-01-31T17:09:53Z"
+		},
+		{
 			"checksumSHA1": "DVRO5DGZrBvO92+G/IA7xABQWkc=",
 			"path": "github.com/lucasb-eyer/go-colorful",
 			"revision": "9c2852a141bf4711e4276f8f119c90d0f20a556c",
@@ -79,6 +85,12 @@
 			"path": "golang.org/x/sys/unix",
 			"revision": "d75a52659825e75fff6158388dddc6a5b04f9ba5",
 			"revisionTime": "2016-12-14T18:38:57Z"
+		},
+		{
+			"checksumSHA1": "kQB2wRB3twjUp615F6zEwGHjNe0=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "e24f485414aeafb646f6fca458b0bf869c0880a1",
+			"revisionTime": "2017-02-11T02:03:03Z"
 		},
 		{
 			"checksumSHA1": "Mr4ur60bgQJnQFfJY0dGtwWwMPE=",

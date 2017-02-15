@@ -1,0 +1,1 @@
+# waveOutXxx for Windows
