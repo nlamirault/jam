@@ -21,7 +21,7 @@ The features it has are:
 
 
 If you use 2-factor authorisation with your Google account, you will have to
-generate an app password, follow this link 
+generate an app password, follow this link
 https://security.google.com/settings/security/apppasswords
 
 The linux binary I release is not static, it depends on pulseaudio, if you want
@@ -37,27 +37,28 @@ Contributions are welcome!
 
 The keybindins are mostly the same as in Cmus:
 
-| Key           | Action                                                                       |
-|---------------|------------------------------------------------------------------------------|
-| return, x     | play currently selected artist, album or song                                |
-| c             | pause                                                                        |
-| v             | stop                                                                         |
-| b             | next track                                                                   |
-| z             | previous track                                                               |
-| u             | synchronize the database (in case you added some songs in the web interface) |
-| /             | search artists                                                               |
-| n             | next search result                                                           |
-| tab           | toggle artists/tracks view                                                   |
-| escape, q     | quit                                                                         |
-| up arrow, k   | scroll up                                                                    |
-| down arrow, j | scroll down                                                                  |
-| Home          | scroll to top                                                                |
-| End           | scroll to bottom                                                             |
-| space         | toggle albums                                                                |
-| R             | randomize artists                                                            |
+| Key                                 | Action                                                                       |
+|-------------------------------------|------------------------------------------------------------------------------|
+| <kbd>return</kbd>, <kbd>x</kbd>     | play currently selected artist, album or song                                |
+| <kbd>c</kbd>                        | pause                                                                        |
+| <kbd>v</kbd>                        | stop                                                                         |
+| <kbd>b</kbd>                        | next track                                                                   |
+| <kbd>z</kbd>                        | previous track                                                               |
+| <kbd>u</kbd>                        | synchronize the database (in case you added some songs in the web interface) |
+| <kbd>/</kbd>                        | search artists                                                               |
+| <kbd>n</kbd>                        | next search result                                                           |
+| <kbd>tab</kbd>                      | toggle artists/tracks view                                                   |
+| <kbd>escape</kbd>, <kbd>q</kbd>     | quit                                                                         |
+| <kbd>up arrow</kbd>, <kbd>k</kbd>   | scroll up                                                                    |
+| <kbd>down arrow</kbd>, <kbd>j</kbd> | scroll down                                                                  |
+| <kbd>Home</kbd>                     | scroll to top                                                                |
+| <kbd>End</kbd>                      | scroll to bottom                                                             |
+| <kbd>space</kbd>                    | toggle albums                                                                |
+| <kbd>R</kbd>                        | randomize artists                                                            |
+
+
 
 [1]: https://github.com/mjibson/moggio
-
 
 
 TODO
@@ -66,4 +67,3 @@ TODO
   (next track, pause, etc)
 - implement search within the GPM global database
 - feature requests are welcome as well
-
