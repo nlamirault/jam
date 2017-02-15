@@ -1,0 +1,21 @@
+machine:
+  pre:
+    - curl -o go.tar.gz -sL https://golang.org/dl/go1.7.4.linux-amd64.tar.gz
+    - sudo rm -rf /usr/local/go
+    - sudo tar -C /usr/local -xzf go.tar.gz
+    - sudo chmod a+w /usr/local/go/src/
+  services:
+    - docker
+
+dependencies:
+  post:
+    - make init
+
+test:
+  pre:
+    - go version
+  override:
+    - mkdir -p ~/.go_workspace/src/github.com/budkin
+    - ln -s ~/jam ~/.go_workspace/src/github.com/budkin/
+    - cd ~/.go_workspace/src/github.com/budkin/jam && make build
+    - cd ~/.go_workspace/src/github.com/budkin/jam && make test lint vet coverage
