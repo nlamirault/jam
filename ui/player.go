@@ -18,8 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// +build windows
-
 package ui
 
 import (
@@ -28,10 +26,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/budkin/jam/music"
 	"github.com/korandiz/mpa"
-	"github.com/koron/go-waveout"
+
+	"github.com/budkin/jam/music"
 )
+
+// OutputStream define an output stream
+type OutputStream interface {
+	CloseStream() error
+
+	Write(data []byte) (int, error)
+}
 
 func (app *App) player() {
 	stop := make(chan bool)
@@ -45,11 +50,11 @@ func (app *App) player() {
 	var pauseTimer time.Time
 	var songDur time.Duration
 
-	stream, err := waveout.NewWithBuffers(2, 44100, 16, 8, 4096)
+	stream, err := makeOutputStream()
 	if err != nil {
-		log.Fatalf("failed to create waveout: %s", err)
+		log.Fatalf("Can't playback from Pulse: %s", err)
 	}
-	defer stream.Close()
+	defer stream.CloseStream()
 
 	//var d mpa.Decoder
 	var r *mpa.Reader
@@ -72,10 +77,12 @@ func (app *App) player() {
 			copy(queueTemp, app.Status.Queue)
 
 			track := queueTemp[album][ntrack]
+
 			song, err := app.GMusic.GetStream(track.ID)
 			if err != nil {
 				log.Fatalf("Can't play stream: %s", err)
 			}
+
 			defDur = time.Duration(0)
 			defTrack = &music.BTrack{}
 			app.printBar(defDur, defTrack)
@@ -103,7 +110,7 @@ func (app *App) player() {
 								paused = false
 								return
 							case <-pause:
-								pauseDur = time.Since(pauseTimer)
+								pauseDur = pauseDur + time.Since(pauseTimer)
 								paused = false
 								break loop
 							}
