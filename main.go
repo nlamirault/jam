@@ -42,14 +42,16 @@ const (
 )
 
 var (
-	vers  bool
-	debug bool
+	vers   bool
+	debug  bool
+	lastFM bool
 )
 
 func init() {
 	// parse flags
 	flag.BoolVar(&vers, "version", false, "print version and exit")
 	flag.BoolVar(&debug, "debug", false, "debug")
+	flag.BoolVar(&lastFM, "lastfm", false, "Enable LastFM scrobbler")
 
 	flag.Usage = func() {
 		fmt.Fprint(os.Stderr, fmt.Sprintf(BANNER, version.Version))
@@ -69,7 +71,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Can't open database: %s", err)
 	}
-	gmusic, lmclient, lastfm, err := auth.CheckCreds(db)
+	gmusic, lmclient, lastfm, err := auth.CheckCreds(db, lastFM)
 	if err != nil {
 		log.Fatalf("Can't connect to Google Music: %s", err)
 	}

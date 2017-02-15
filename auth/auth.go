@@ -43,7 +43,7 @@ func loginFromDatabase(db *bolt.DB) (*gmusic.GMusic, error) {
 	}, nil
 }
 
-func CheckCreds(db *bolt.DB) (*gmusic.GMusic, *lastfm.Client, string, error) {
+func CheckCreds(db *bolt.DB, lastFM bool) (*gmusic.GMusic, *lastfm.Client, string, error) {
 	gm, err := loginFromDatabase(db)
 	if err != nil {
 		gm, err = authenticate()
@@ -59,6 +59,9 @@ func CheckCreds(db *bolt.DB) (*gmusic.GMusic, *lastfm.Client, string, error) {
 	}
 	if err != nil {
 		return nil, nil, "", err
+	}
+	if !lastFM {
+		return gm, nil, "", nil
 	}
 
 	lmclient := lastfm.New(
