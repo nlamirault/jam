@@ -1,5 +1,7 @@
 # jam
 
+[![License MIT][badge-license]](LICENSE)
+
 Master : [![Circle CI](https://circleci.com/gh/nlamirault/jam/tree/ci.svg?style=svg)](https://circleci.com/gh/nlamirault/jam/tree/ci)
 
 This is my first Go program, I wanted to listen to Google Play Music on console,
@@ -24,16 +26,29 @@ If you use 2-factor authorisation with your Google account, you will have to
 generate an app password, follow this link
 https://security.google.com/settings/security/apppasswords
 
+
+## Installation
+
+You can download the binaries :
+
+* Architecture i386 [ [windows](https://github.com/budkin/jam/releases/download/v0.4.1/jam_x86.exe) ]
+* Architecture amd64 [ [linux](https://github.com/budkin/jam/releases/download/v0.4.1/jam_x64) / [windows64](https://github.com/budkin/jam/releases/download/v0.4.1/jam_x64.exe) ]
+
 The linux binary I release is not static, it depends on pulseaudio, if you want
 to build it from source, you are going to need the pulseaudio development package
 installed.
 Windows users are all set
 
-
-
 If you have an x86 system, you'll have to compile it yourself, sorry
 
+
+## Contributing
+
 Contributions are welcome!
+See [CONTRIBUTING](CONTRIBUTING.md).
+
+
+## Usage
 
 The keybindins are mostly the same as in Cmus:
 
@@ -57,13 +72,22 @@ The keybindins are mostly the same as in Cmus:
 | <kbd>R</kbd>                        | randomize artists                                                            |
 
 
-
 [1]: https://github.com/mjibson/moggio
 
 
-TODO
-- make the interface detachable (like MOC)
-- make the binary able to receive comand line arguments for controlling playback
+## TODO
+
+* make the interface detachable (like MOC)
+* make the binary able to receive comand line arguments for controlling playback
   (next track, pause, etc)
-- implement search within the GPM global database
-- feature requests are welcome as well
+* implement search within the GPM global database
+* feature requests are welcome as well
+
+
+## License
+
+See [LICENSE](LICENSE) for the complete license.
+
+
+
+[badge-license]: https://img.shields.io/badge/license-MIT-green.svg?style=flat
